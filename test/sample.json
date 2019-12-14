@@ -1,0 +1,159 @@
+[
+    {
+        "invokeUrl" : "http://www.example.com/"
+    },
+    {
+        "id" : "002.1",
+        "description" : "Parameters Template. Mandatory property 'invokeUrl'. <<<\n>>> By default 'httpMethod' is set to 'GET'.<<<\n>>>",
+
+        "invokeUrl" : "http://www.example.com/"
+    },
+    {
+        "id" : "002.2",
+        "description" : "Parameters Template. Turn on debug flag to display verbose message.<<<\n>>> By default 'debug' flag is set to 'false'.<<<\n>>>",
+
+        "invokeUrl" : "http://www.example.com/",
+        "debug" : true
+    },
+    {
+        "id" : "003.1",
+        "description" : "Parameters Template. Invalid URL.",
+
+        "invokeUrl" : "https://www.sample.com/",
+
+        "negativeTest" : true,
+        "testErrorMessage" : "connect ECONNREFUSED 173.230.129.147:443"
+    },
+    {
+        "id" : "003.2",
+        "description" : "Parameters Template. Negative test flag set to true and will be counted as successful called. <<<\n>>> By default 'negativeTest' flag is set to 'False'.<<<\n>>>",
+
+        "invokeUrl" : "https://www.sample.com/",
+
+        "negativeTest" : true,
+        "testErrorMessage" : "connect ECONNREFUSED 173.230.129.147:443"
+    },
+    {
+        "id" : "003.3",
+        "description" : "Parameters Template. Ignore server certificate(SSL) flag. <<<\n>>> By default 'ignoreServerCert' flag is set to 'True'.<<<\n>>>",
+
+        "invokeUrl" : "https://www.google.com",
+
+        "ignoreServerCert" : false,
+        "caCertFileName" : "./certs/GlobalSign.pem",
+        "caCertFileType" : "x509"
+    },
+    {
+        "id" : "004.1",
+        "description" : "Parameters Template. Execute call multiple times by setting 'repeats' property(integer). Each call will be tag with QueryString.",
+
+        "invokeUrl" : "http://www.example.com/",
+
+        "repeats" : 2
+    },
+    {
+        "id" : "004.2",
+        "description" : "Parameters Template. Execute call in parallel by setting 'parallel' property(integer). Each call will be tag with QueryString.",
+
+        "invokeUrl" : "http://www.example.com/",
+
+        "repeats" : 2,
+        "parallel" : 2
+    },
+    {
+        "id" : "004.3",
+        "description" : "Parameters Template. Execute call multiple times with delay by setting 'repeats' property(integer) and 'delay' property(integer). Each call will be tag with QueryString.",
+
+        "invokeUrl" : "http://www.example.com/",
+
+        "repeats" : 3,
+        "delay" : 1000
+    },
+    {
+        "id" : "004.4",
+        "description" : "Parameters Template. Call with QueryString.",
+
+        "invokeUrl" : "http://www.example.com/",
+
+        "queryString" : { "clientname" : "node.js.test", "param1" : "data 1", "param2" : "data 2" }
+    },
+    {
+        "id" : "004.5",
+        "description" : "Parameters Template. Call with Headers.",
+
+        "invokeUrl" : "http://www.example.com/",
+
+        "httpHeaders" : { "Accept" : "application/jose+jws", "Accept-Charset" : "utf-8" }
+    },
+    {
+        "id" : "005.1",
+        "description" : "Parameters Template. Submit form data.",
+
+        "invokeUrl" : "http://www.example.com/",
+
+        "httpMethod" : "POST",
+        "formData" : { "clientname" : "node.js.test", "param1" : "data 1", "param2" : "data 2" }
+    },
+    {
+        "id" : "005.2",
+        "description" : "Parameters Template. Submit multi-part form data.",
+
+        "invokeUrl" : "http://www.example.com/",
+
+        "httpMethod" : "POST",
+        "multiPartData": { 
+            "fields": {
+                "mail[from]": "from@gov.sg",
+                "mail[to]": "to@gov.sg",
+                "mail[subject]": "email subject",
+                "mail[html]": "<b>email html</b>",
+                "mail[text]": "email text"
+            },
+            "attachments": {
+                "files": [ "./resources/401-history.png", "./resources/402-h2.png" ],
+                "fieldName": "./resources/500-warner-tv-encore.png"
+            }
+        }
+    },
+    {
+        "id" : "005.3",
+        "description" : "Parameters Template. Submit JSON data.",
+
+        "invokeUrl" : "http://www.example.com/",
+
+        "httpMethod" : "POST",
+        "jsonData" :  {
+            "mail" : {
+                "from" : "from@gov.sg",
+                "to" : "to@gov.sg",
+                "subject" : "email subject",
+                "text" : "email text",
+                "html" : "<b>email html</b>" 
+            }
+        }
+    },
+    {
+        "id" : "005.4",
+        "description" : "Parameters Template. Submit other data type.",
+
+        "invokeUrl" : "http://www.example.com/",
+
+        "httpMethod" : "POST",
+        "textData" : {
+            "contentType" : "application/soap+xml",
+            "data" : "<soapenv:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:urn=\"urn:examples:helloservice\"><soapenv:Header/><soapenv:Body><urn:helloworld soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><kbsize xsi:type=\"xsd:int\">2</kbsize><random xsi:type=\"xsd:string\">2</random><clientname xsi:type=\"xsd:string\">3</clientname></urn:helloworld></soapenv:Body></soapenv:Envelope>"
+        }
+    },
+    {
+        "id" : "005.5",
+        "description" : "Parameters Template. Submit other data type from file (utf8).",
+
+        "invokeUrl" : "http://www.example.com/",
+
+        "httpMethod" : "POST",
+        "textData" : {
+            "contentType" : "application/soap+xml",
+            "dataFileName" : "./resources/soap.l2.xml"
+        }
+    }
+]
