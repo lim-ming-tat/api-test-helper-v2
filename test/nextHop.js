@@ -4,9 +4,6 @@ const helper = require('./../index').apiHelper;
 
 let params = require('./nextHop.json');
 
-//let params_login = require('./cm.login.json');
-
-
 helper.setDefaultParam({
     // suppress the successful message, will not suppress error message is any
     suppressMessage: false,
@@ -21,8 +18,7 @@ helper.setDefaultParam({
 Promise.resolve()
     .then(function() { return helper.startTestTimer() })
 
-    .then(function() { return helper.performTest(params) }).then(message => console.log("\nStart >>>>>>\n" + message + "\n<<<<<< End"))
-    //.then(function() { return helper.performTest(params_login) }).then(message => console.log("\nStart >>>>>>\n" + message + "\n<<<<<< End"))
+    .then(function() { return helper.performTest(params) })
 
     .then(helper.displayTestResult).then(message => console.log("\n" + message))
     .then(helper.displayElapseTime).then(message => console.log("\n" + message + "\n"))

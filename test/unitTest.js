@@ -27,8 +27,8 @@ helper.setDefaultParam({
 Promise.resolve()
     .then(function() { return helper.startTestTimer() })
 
-    .then(function() { return helper.performTest(params_sample) }).then(message => console.log("\nStart >>>>>>\n" + message + "\n<<<<<< End"))
-    .then(function() { return helper.performTest(params_security) }).then(message => console.log("\nStart >>>>>>\n" + message + "\n<<<<<< End"))
+    .then(function() { return helper.performTest(params_sample) })
+    .then(function() { return helper.performTest(params_security) })
 
     .then(helper.displayTestResult).then(message => console.log("\n" + message))
     .then(helper.displayElapseTime).then(message => console.log("\n" + message + "\n"))
