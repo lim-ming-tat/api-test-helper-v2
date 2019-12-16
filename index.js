@@ -157,9 +157,19 @@ util.invokeRequest = (param) => {
 }
 
 util.performTest = (params) => {
+    return util.performTestInternal(params)
+        .then(message => {
+            if (defaultParam.suppressMessage == undefined || !defaultParam.suppressMessage)
+            {
+                //console.log("\n<<<<<< Start >>>>>>\n" + message + "\n<<<<<< End >>>>>>")
+                console.log(`\n${defaultParam.batchPrefix}\n${message}\n${defaultParam.batchSuffix}`)
+            }
+        });
+}
+util.performTestInternal = (params) => {
     var cloneParams = JSON.parse(JSON.stringify(params));
 
-    return util.performTestRecursive(cloneParams);
+    return util.performTestRecursive(cloneParams)
 }
 
 util.performTestRecursive = (params) => {
@@ -365,6 +375,9 @@ util.getApexSecurityToken = (param) => {
 var defaultParam = undefined;
 util.setDefaultParam = (defaultValue) => {
     defaultParam = defaultValue;
+
+    if (defaultParam.batchPrefix == undefined) defaultParam.batchPrefix = "== Start =="
+    if (defaultParam.batchSuffix == undefined) defaultParam.batchSuffix = "==  End  =="
 }
 
 util.getDefaultParam = () => {
@@ -496,7 +509,7 @@ util.executeTest = (param) => {
         }
     }).then( () => { 
         if (param.nextHopParams != undefined && param.nextHopParams.length > 0) {
-            return util.performTest(param.nextHopParams).then( message => {
+            return util.performTestInternal(param.nextHopParams).then( message => {
                 // indent the child message and save for top level...
                 if (message.trim().length > 0) childMessage += indentation + message.replace(/\n/g, "\n" + indentation);
             });
