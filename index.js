@@ -623,7 +623,14 @@ util.executeTest = (param) => {
             //console.log(">>> " + param.id + ". " + param.description + " <<< - Failed. " + param.error.message);
             //console.log(">>> " + param.id + ". " + param.description + " <<< - Failed. " + setColor.error(param.error.message));
             //message += indentation + ">>> " + param.id + ". " + param.description + " <<< - Failed. " + setColor.error(param.error.message) + "\n"
-            message += indentation + "Failed - " + setColor.error(param.error.message) + "\n"
+            
+            //message += indentation + "Failed - " + setColor.error(param.error.message) + "\n"
+            if (param.error != undefined && param.error.message != undefined) {
+                message += indentation + "Failed - " + setColor.error(param.error.message) + "\n"
+            }
+            if (param.verifyMessage != undefined && param.verifyMessage != "") {
+                message += indentation + "Validation failed - " + setColor.error(param.verifyMessage) + "\n"
+            }
 
             if (param.error != undefined && param.error.response != undefined) {
                 //console.error("   >>> statusCode::: " + param.error.response.statusCode);
