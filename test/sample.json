@@ -35,6 +35,15 @@
     },
     {
         "id" : "003.3",
+        "description" : "Parameters Template. Negative test failed Test.",
+
+        "invokeUrl" : "https://www.sample.com/",
+
+        "negativeTest" : true,
+        "testErrorMessage" : "connect ECONNREFUSED 173.230.129.147:8443"
+    },
+    {
+        "id" : "003.4",
         "description" : "Parameters Template. Ignore server certificate(SSL) flag. <<<\n>>> By default 'ignoreServerCert' flag is set to 'True'.<<<\n>>>",
 
         "invokeUrl" : "https://www.google.com",

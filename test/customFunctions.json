@@ -1,0 +1,54 @@
+[
+    {
+        "id": "001"
+        ,"description": "Basic HTTP GET Request Test."
+        ,"invokeUrl": "http://www.example.com/"
+    }
+    ,{
+        "id": "002"
+        ,"description": "Basic HTTP GET Request Test with JSON Response."
+        ,"invokeUrl": "https://p8my0jolq8.execute-api.ap-southeast-1.amazonaws.com/v1/helloworld"
+    }
+    ,{
+        "id": "003"
+        ,"description": "Basic HTTP GET Request Test with JSON Header Response."
+        ,"invokeUrl": "https://wfg8neqn09.execute-api.ap-southeast-1.amazonaws.com/Stage/api/headers"
+        ,"XskipTest": false
+
+        ,"preHttpRequest": "preHttpRequest"
+        ,"verifyHttpRequest": "verifyHttpRequest"
+        ,"postHttpRequest": "postHttpRequest"
+    }
+    ,{
+        "id": "004"
+        ,"description": "Failed Validation Test."
+        ,"invokeUrl": "https://wfg8neqn09.execute-api.ap-southeast-1.amazonaws.com/Stage/api/headers"
+        ,"XskipTest": false
+
+        ,"preHttpRequest": "preHttpRequest"
+        ,"verifyHttpRequest": "verifyHttpRequestFailed"
+        ,"verifyMessage": "Message to show when verification failed detected..."
+        ,"postHttpRequest": "postHttpRequest"
+    }
+    ,{
+        "id": "005"
+        ,"description": "HTTP Not Found Test."
+        ,"invokeUrl": "https://wfg8neqn09.execute-api.ap-southeast-1.amazonaws.com/Stage/api/test/"
+        ,"XskipTest": false
+
+        ,"preHttpRequest": "preHttpRequest"
+        ,"verifyHttpRequest": "verifyHttpRequest"
+        ,"verifyMessage": "Message to show when verification failed detected..."
+        ,"postHttpRequest": "postHttpRequest"
+    }
+    ,{
+        "id": "006"
+        ,"description": "Basic Test"
+        ,"invokeUrl": "https://wfg8neqn09.execute-api.ap-southeast-1.amazonaws.com/Stage/api/headers"
+        ,"skipTest": false
+
+        ,"preHttpRequest": "preHttpRequest"
+        ,"verifyHttpRequest": "verifyHttpRequest"
+        ,"postHttpRequest": "postHttpRequest"
+    }
+]

@@ -162,7 +162,7 @@ util.performTest = (params) => {
             if (defaultParam.suppressMessage == undefined || !defaultParam.suppressMessage)
             {
                 //console.log("\n<<<<<< Start >>>>>>\n" + message + "\n<<<<<< End >>>>>>")
-                console.log(`\n${defaultParam.batchPrefix}\n${message}\n${defaultParam.batchSuffix}`)
+                console.log(`\n${defaultParam.batchPrefix}${message}\n${defaultParam.batchSuffix}`)
             }
         });
 }
@@ -261,7 +261,7 @@ util.performTestRecursive = (params) => {
         function(message) {
             // message can be string or array, array return by promise.all 
             //console.log("6..." + message);
-            if (Array.isArray(message) && message.length > 0) message = message.join("\n");
+            if (Array.isArray(message) && message.length > 0) message = message.join("");
             return ( util.performTestRecursive(newParams).then( (childMessage) => { 
                 //console.log("7.1..." + message + "<<<");
                 //console.log("7.2..." + childMessage + "<<<");
@@ -269,7 +269,7 @@ util.performTestRecursive = (params) => {
                 if (message.trim().length == 0) return childMessage
                 //if (Array.isArray(childMessage)) childMessage = childMessage.join("\nzzz");
 
-                return message + "\n" + childMessage
+                return message + childMessage
 
             })
             ); // RECURSE!
@@ -457,7 +457,11 @@ util.executeTest = (param) => {
 
         if (param.preHttpRequest != undefined) {
             // execute pre Http Request function from parameters
-            util[param.preHttpRequest](param);
+            util[param.preHttpRequest](param)
+                .then(message => { 
+                    if (message.trim().length > 0)
+                        childMessage += indentation + message.replace(/\n/g, "\n" + indentation)
+                });
         }
 
         applyReplaceMaps(param);
@@ -482,15 +486,43 @@ util.executeTest = (param) => {
                 param.responseBody = res.body;
             else
                 param.responseText = res.text;
-    
-            if (param.verifyFunction != undefined) {
+
+            if (param.verifyHttpRequest != undefined) {
                 if (param.verifyMessage == undefined) param.verifyMessage = "\n";
 
                 // execute verification function from parameters
-                return util[param.verifyFunction](param, res).then(testResult => { param.testPassed = testResult; });
+                return util[param.verifyHttpRequest](param, res).then(testResult => { 
+                    param.testPassed = testResult.result; 
+                    return { message: testResult.message, response: res }
+                });
+            } else if (param.verifyFunction != undefined) {
+                if (param.verifyMessage == undefined) param.verifyMessage = "\n";
+
+                // execute verification function from parameters
+                return util[param.verifyFunction](param, res).then(testResult => { 
+                    param.testPassed = testResult; 
+                    return { response: res }
+                });
             } else {
                 // test pass
                 param.testPassed = true;
+                return { response: res }
+            }
+        }).then( (requestResponse) => { 
+            var message = requestResponse.message
+
+            //console.log("finally message:::" + message);
+            if (message != undefined && message.trim().length > 0)
+                childMessage += indentation + message.replace(/\n/g, "\n" + indentation)
+
+            return requestResponse.response
+        }).then( (response) => { 
+            if (param.postHttpRequest != undefined) {
+                // execute post Http Request function from parameters
+                return util[param.postHttpRequest](param, response).then(message => { 
+                    if (message.trim().length > 0)
+                        childMessage += indentation + message.replace(/\n/g, "\n" + indentation)
+                });
             }
         }).catch(function(error) { 
             param.error = error;
@@ -499,6 +531,7 @@ util.executeTest = (param) => {
                 param.testPassed = true;
             }
         }).finally( () => { return resolve() });
+/*
     }).then( () => { 
         if (param.postHttpRequest != undefined) {
             // execute post Http Request function from parameters
@@ -507,6 +540,7 @@ util.executeTest = (param) => {
                     childMessage += indentation + message.replace(/\n/g, "\n" + indentation)
             });
         }
+*/
     }).then( () => { 
         if (param.nextHopParams != undefined && param.nextHopParams.length > 0) {
             return util.performTestInternal(param.nextHopParams).then( message => {
@@ -531,7 +565,7 @@ util.executeTest = (param) => {
 
         if (param.debug) {
             //console.log(">>> " + param.id + ". " + param.description + " <<< - Start.");
-            message += ">>> " + param.id + ". " + getDescription(param) + " <<< - Start.";
+            message += "\n>>> " + param.id + ". " + getDescription(param) + " <<< - Start.";
 
             if (param.baseString != undefined) {
                 //console.log('\nBaseString::: \n' + param.baseString);
@@ -557,21 +591,22 @@ util.executeTest = (param) => {
             }
             if (param.responseBody != undefined) {
                 //console.log(JSON.stringify(param.responseBody, null, 4));
-                message += indentation + JSON.stringify(param.responseBody, null, 4).replace(/\n/g, "\n" + indentation) + "\n";
+                message += "OBJECT >>>\n" + indentation + JSON.stringify(param.responseBody, null, 4).replace(/\n/g, "\n" + indentation);
             }
             if (param.responseText != undefined) {
                 //console.log("TEXT:::" + param.responseText);
-                message += "TEXT >>>\n" + indentation + param.responseText.replace(/\n/g, "\n" + indentation) + "\n";
+                message += "TEXT >>>\n" + indentation + param.responseText.replace(/\n/g, "\n" + indentation);
             }
 
             if (param.delay > 0) {
                 //console.log("Execution Delay(Milliseconds):::" + param.delay);
-                message += indentation + "Execution Delay(Milliseconds) >>> " + param.delay + "\n";
+                message += "\n" + indentation + "Execution Delay(Milliseconds) >>> " + param.delay;
             }
 
-            if (param.verifyMessage != undefined) {
+            if (param.verifyMessage != undefined && param.verifyMessage.trim().length > 0) {
                 //console.log(param.verifyMessage);
-                message += indentation + param.verifyMessage.replace(/\n/g, "\n" + indentation) + "\n";
+                //message += "\n" + indentation + param.verifyMessage.replace(/\n/g, "\n" + indentation);
+                message += "\n" + indentation + "Validation Message >>> " + setColor.warn(param.verifyMessage) 
             }
         }
 
@@ -584,19 +619,22 @@ util.executeTest = (param) => {
 
                     if (param.testErrorMessage != undefined && param.testErrorMessage == ((param.error) ? param.error.message : '')) {
                         //console.log(">>> " + param.id + ". " + param.description + " <<< - Negative Test Success.\n" + param.error.message + "\n");
-                        message += ">>> " + param.id + ". " + getDescription(param) + " <<< - Negative Test Success.\n";
-                        message += indentation + param.error.message + "\n";
+                        message += "\n>>> " + param.id + ". " + getDescription(param) + " <<< - Negative Test Success.";
+                        message += "\n" + indentation + param.error.message;
                     } else {
                         passedTest--;
                         //console.log(">>> " + param.id + ". " + param.description + " <<< - Negative Test Failed.\nExpecting Error:::" + param.testErrorMessage + "\n        But Get:::" + ((param.error) ? param.error.message : '') + "\n");
-                        message += indentation + ">>> " + param.id + ". " + getDescription(param) + " <<< - Negative Test Failed.\nExpecting Error:::" + param.testErrorMessage + "\n        But Get:::" + ((param.error) ? param.error.message : '') + "\n\n"
+                        //message += "\n" + indentation + ">>> " + param.id + ". " + getDescription(param) + " <<< - Negative Test Failed.\nExpecting Error:::" + param.testErrorMessage + "\n        But Get:::" + ((param.error) ? param.error.message : '') + "\n\n"
+                        message += "\n" + indentation + ">>> " + param.id + ". " + getDescription(param) + " <<< - Negative Test Failed."
+                        message += "\n" + indentation + "Expecting::: " + setColor.warn(param.testErrorMessage)
+                        message += "\n" + indentation + "But Got:::   " + setColor.warn((param.error) ? param.error.message : '')
                     }
                 } else {
                     //console.log(">>> " + param.id + ". " + param.description + " <<< - Success.");
                     if (param.debug)
-                        message += ">>> " + " <<< - Success.";
+                        message += "\n>>> " + " <<< - Success.";
                     else
-                        message += ">>> " + param.id + ". " + getDescription(param) + " <<< - Success.";
+                        message += "\n>>> " + param.id + ". " + getDescription(param) + " <<< - Success.";
 
                         //message += "\n>>> " + param.id + ". " + getDescription(param) + " <<< - ===" + childMessage + "===";
                 }
@@ -607,18 +645,18 @@ util.executeTest = (param) => {
                 }
             }
         } else {
-            if (param.debug) console.log();
+            //if (param.debug) console.log();
             if (!param.debug) {
                 //console.log(">>> " + param.id + ". " + param.description + " <<< - Start.");
                 //console.log("\nURL:::");
                 //console.warn(param.invokeUrl);
                 //console.log();
 
-                message += ">>> " + param.id + ". " + getDescription(param) + " <<< - Start.\n";
-                message += indentation + "URL:::\n"
-                //message += indentation + chalk.yellow(param.invokeUrl)
-                message += indentation + setColor.warn(param.invokeUrl)
-                message += "\n"
+                message += "\n>>> " + param.id + ". " + getDescription(param) + " <<< - Start.";
+                //message += indentation + "URL:::\n"
+                //message += indentation + setColor.warn(param.invokeUrl)
+                //message += "\n"
+                message += `\n${indentation}URL::: ${setColor.warn(param.invokeUrl)}`
             }
             //console.log(">>> " + param.id + ". " + param.description + " <<< - Failed. " + param.error.message);
             //console.log(">>> " + param.id + ". " + param.description + " <<< - Failed. " + setColor.error(param.error.message));
@@ -626,29 +664,31 @@ util.executeTest = (param) => {
             
             //message += indentation + "Failed - " + setColor.error(param.error.message) + "\n"
             if (param.error != undefined && param.error.message != undefined) {
-                message += indentation + "Failed - " + setColor.error(param.error.message) + "\n"
+                message += "\n" + indentation + "Failed - " + setColor.error(param.error.message)
             }
-            if (param.verifyMessage != undefined && param.verifyMessage != "") {
-                message += indentation + "Validation failed - " + setColor.error(param.verifyMessage) + "\n"
+            if (!param.debug && param.verifyMessage != undefined && param.verifyMessage != "") {
+                message += "\n" + indentation + "Validation failed - " + setColor.error(param.verifyMessage) 
             }
 
             if (param.error != undefined && param.error.response != undefined) {
                 //console.error("   >>> statusCode::: " + param.error.response.statusCode);
                 //console.error("   >>> clientError::: " + param.error.response.clientError);
                 //console.error("   >>> serverError::: " + param.error.response.serverError);
-                message += indentation + ">>> statusCode::: " + param.error.response.statusCode + "\n"
-                message += indentation + ">>> clientError::: " + param.error.response.clientError + "\n"
-                message += indentation + ">>> serverError::: " + param.error.response.serverError + "\n"
+                message += `\n${indentation}>>> statusCode:::  ${param.error.response.statusCode}`
+                message += `\n${indentation}>>> clientError::: ${param.error.response.clientError}`
+                message += `\n${indentation}>>> serverError::: ${param.error.response.serverError}`
                 
                 //if(param.debug) console.log(param.error);
-                if(param.debug) message += indentation + param.error + "\n";
+                if(param.debug) message += `\n${indentation}${setColor.error(param.error)}`
 
                 //console.log("=== errorText::: ===");
                 //console.error(param.error.response.error.text);
                 //console.log("=== errorText::: ===");
-                message += indentation + "=== errorText::: ===" + "\n";
-                message += indentation + param.error.response.error.text.replace(/\n/g, "\n" + indentation) + "\n";
-                message += indentation + "=== errorText::: ===" + "\n";
+                //message += indentation + "=== errorText::: ===" + "\n";
+                message += `\n${indentation}=== errorText::: ===`
+                message += "\n" + indentation + param.error.response.error.text.replace(/\n/g, "\n" + indentation);
+                //message += indentation + "=== errorText::: ===" + "\n";
+                message += `\n${indentation}=== errorText::: ===`
             }
         }
 
@@ -658,23 +698,23 @@ util.executeTest = (param) => {
             message += "\n" + indentation + getElapseTime(param.startTime, param.endTime).replace(/\n/g, "\n" + indentation);
         }
         
+        //console.log("message:::" + message)
+        //if (childMessage != "") message += "\n" + indentation + childMessage.replace(/\n/g, "\n" + indentation);
+
+        if (childMessage.trim().length > 0)
+            if (message.trim().length > 0 ) 
+                message += childMessage;
+            else
+                message = childMessage;
+
         if (param.debug || param.error != undefined) {
             //console.log(">>> " + param.id + ". " + param.description + " <<< - END.");
             //message += ">>> " + param.id + ". " + param.description + " <<< - END."
             if(param.testPassed != undefined && param.testPassed && param.error != undefined) message += "\n" + indentation + setColor.error(param.error);
             message += "\n>>> " + " <<< - END.";
         }
-
-        //console.log("message:::" + message)
-        //if (childMessage != "") message += "\n" + indentation + childMessage.replace(/\n/g, "\n" + indentation);
-
-        if (childMessage.trim().length > 0)
-            if (message.trim().length > 0 ) 
-                message += "\n" + childMessage;
-            else
-                message = childMessage;
-
-        //if (childMessage  != "") message += "\n" + childMessage;
+                //if (childMessage  != "") message += "\n" + childMessage;
+        //console.log(`--==${message}==--`);
         
         resolve(message);
     });

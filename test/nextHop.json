@@ -7,12 +7,14 @@
         "parallel": 2,
         "showElapseTime": false,
         "debug": false,
-        "nextHopParams": {
-            "id": "001.1",
-            "description": "Level 1.1",
-            "invokeUrl": "http://www.example.com/",
-            "showElapseTime": false
-        }
+        "nextHopParams": [
+            {
+                "id": "001.1",
+                "description": "Level 1.1",
+                "invokeUrl": "http://www.example.com/",
+                "showElapseTime": false
+            }
+        ]
     },
     {
         "id": "002",
