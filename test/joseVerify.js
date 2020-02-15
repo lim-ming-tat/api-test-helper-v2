@@ -46,7 +46,7 @@ function verifyJws(param, response) {
             return jose.JWS.createVerify(jwsKey)
                 .verify(data)
                 .then(function(result) {
-                     var message = "\nJWS Response:::\n" + JSON.stringify(JSON.parse(result.payload.toString()), null, 4);
+                     var message = param.debug ? "\nJWS Response:::\n" + JSON.stringify(JSON.parse(result.payload.toString()), null, 4) : "";
 
                     return { result: true, message: message };
                 });
@@ -104,7 +104,7 @@ function verifyJose(param, response) {
                 .decrypt(data)
                 .then(function(result) {
                     //param.verifyMessage += 
-                    var message = "\nJWE Response:::\n" + JSON.stringify(JSON.parse(result.payload.toString()), null, 4);
+                    var message = param.debug ? "\nJWE Response:::\n" + JSON.stringify(JSON.parse(result.payload.toString()), null, 4) : "";
 
                     if (param.verifyJweJws) {
                         var customResponse = {};

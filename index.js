@@ -500,7 +500,7 @@ util.executeTest = (param) => {
 
                 // execute verification function from parameters
                 return util[param.verifyFunction](param, res).then(testResult => { 
-                    console.log("testResult:::" + testResult)
+                    //console.log("testResult:::" + testResult)
                     param.testPassed = testResult; 
                     return { response: res }
                 });
