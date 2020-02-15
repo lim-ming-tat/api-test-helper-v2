@@ -80,7 +80,7 @@
         }
 
         ,"verifyHttpRequest": "myVerifyJws"
-        ,"publicCertFileName": "./certs/jose_api.key.pem"
+        ,"publicCertFileName": "./certs/jose_api.cer"
         ,"publicCertFileType": "pem"
     }
     ,{
@@ -144,7 +144,7 @@
         ,"verifyHttpRequest": "myVerifyJweJws"
         ,"privateCertFileName": "./certs/rest_api_eg.key.pem"
         ,"privateCertFileType": "pem"
-        ,"publicCertFileName": "./certs/jose_api.key.pem"
+        ,"publicCertFileName": "./certs/jose_api.cer"
         ,"publicCertFileType": "pem"
     }
 ]
