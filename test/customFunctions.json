@@ -13,7 +13,6 @@
         "id": "003"
         ,"description": "Basic HTTP GET Request Test with JSON Header Response."
         ,"invokeUrl": "https://wfg8neqn09.execute-api.ap-southeast-1.amazonaws.com/Stage/api/headers"
-        ,"XskipTest": false
 
         ,"preHttpRequest": "preHttpRequest"
         ,"verifyHttpRequest": "verifyHttpRequest"
@@ -21,9 +20,8 @@
     }
     ,{
         "id": "004"
-        ,"description": "Failed Validation Test."
+        ,"description": "Failed Validation Test. >>>Expecting this test case to failed<<<."
         ,"invokeUrl": "https://wfg8neqn09.execute-api.ap-southeast-1.amazonaws.com/Stage/api/headers"
-        ,"XskipTest": false
 
         ,"preHttpRequest": "preHttpRequest"
         ,"verifyHttpRequest": "verifyHttpRequestFailed"
@@ -32,9 +30,8 @@
     }
     ,{
         "id": "005"
-        ,"description": "HTTP Not Found Test."
+        ,"description": "HTTP Not Found Test. >>>Expecting this test case to failed<<<."
         ,"invokeUrl": "https://wfg8neqn09.execute-api.ap-southeast-1.amazonaws.com/Stage/api/test/"
-        ,"XskipTest": false
 
         ,"preHttpRequest": "preHttpRequest"
         ,"verifyHttpRequest": "verifyHttpRequest"
@@ -43,12 +40,111 @@
     }
     ,{
         "id": "006"
-        ,"description": "Basic Test"
+        ,"description": "postHttpRequest Test"
         ,"invokeUrl": "https://wfg8neqn09.execute-api.ap-southeast-1.amazonaws.com/Stage/api/headers"
-        ,"skipTest": false
 
         ,"preHttpRequest": "preHttpRequest"
         ,"verifyHttpRequest": "verifyHttpRequest"
         ,"postHttpRequest": "postHttpRequest"
+    }
+    ,{
+        "id": "007"
+        ,"description": "VerifyHttpRequest Test. >>>Expecting this test case to failed<<<."
+        ,"invokeUrl": "https://wfg8neqn09.execute-api.ap-southeast-1.amazonaws.com/Stage/api/headers"
+
+        ,"verifyHttpRequest": "myVerifyJws"
+        ,"publicCertFileName": "./certs/GlobalSign.pem"
+        ,"publicCertFileType": "pem"
+    }
+    ,{
+        "id": "008"
+        ,"description": "Verify JWS Test"
+
+        ,"httpMethod": "POST"
+        ,"invokeUrl": "http://localhost:3000/api/bodyEcho"
+
+        ,"httpHeaders": {
+            "Connection": "keep-alive"
+            ,"Accept" : "application/json"
+            ,"Content-Type" : "application/json"
+        }
+        ,"jsonData": {
+            "protected": "eyJraWQiOiJzaWduS2V5IiwiYWxnIjoiUlMyNTYiLCJjdHkiOiJhcHBsaWNhdGlvbi9qc29uIn0",
+            "payload": "eyJzdGF0dXNDb2RlIjoyMDAsImJvZHkiOlt7InV1SWQiOiJkNWE5N2NmZi1hOWI0LTRiZDctYmE3OS1lMWExMTAxNjllYTgiLCJvcGVyYXRpb24iOiJHRVQiLCJkYXRhIjoiUHhxRmVHWWVrWXVSZHpSaUZRZXNhaVV1bmxUNmJqSmpkQ3JQSTZDSkJ4bGZITGlsTVJqZDN0N2dtbVVmQ1BBWjRHT3RVdDQycW5GTjh1aHEwS0htUW9LZXpMemJoMDFzRDNtaWNVUDdvQTNFWEFGNkNseFltdXh3U2tvZjFJcjNqTm9xRVU5emlPdUdqRklXS0dyajFjOFNTejJOd0FzWHFkaUt3ZVh3SnRmbVBYNFRkVEx1UmVRaVF5WU1ZRVFZbGNKTnM1NjVSbzFHeG4ydW1UdXI0S1FSRG1FaFkyQ2M4RWxpMmZrMHFOdGRDdURDM2lpYWRiR3RNMzhla2FiWXdMamZQRW8zdUNpazVMYmphTWVyWVFCRURPams5RWtaR0o0WGtiS01oWGI1d2ZrQzNMbGtDek9sZW9uN1UwallzSGVib3lGakcyNEZIRzlUczNYQlBaVTR3WWhKVGNvc0dZOGJDcWNiRzRnRW9YQ3ViWGRpbXBFbzBCQVJ4SWZla3lETVBuams3QWhPWE9oVDEyQ0tZR2ZJSmhza2h4M0c0ZUVKQ3lYODB3YmdQYjBsNzdFZzEyWGZtbkw4YVluMjF3NWRoSmtUZVFObE9ubFlrbTRJNVdZeGJtYU5VZFV4OVpNaG56YlJ0VWpScG1ZaktBQXdkR21HVDhFTGpjQVRwYm85d2E4R05BeXg5blkzNVVXM001MG16a1dZZU1ldVc4bGV1TURBMW55Z2RVMzJ6aVNlcEtQOGFIclc3V01MSXFIVU4weTgwRURpZU1zV2pvN2NYc0x5U0ZUdVJzejNJUzFwTnBUOUdhWnhiUlkzRlFkZTNFeWRvcFpxOFN0OExVNHd6eGIxOXE3bUhnU1RiNnNpZjBUMXFucGplT1lrS0dyQ0dmaktmQVlyanpJTDNCYUdlaGJlaXg1ZDdwaGZEMW5uMUl4Zk4zN1hUTlJhVWZ4S2FVa3lreDh5R05EbGxlSkU1U3lMOWI0NTBBeGZuczNvaVlxcGpaYUN6alFBMkVqam4zU1l5ZzF1ZnFIQWdKVUdib3B5YmhXcUk0Yjc0UURUcnlOeEJiZVNwYnNHSXQ1OG0wNUxIZ0dMNFVnWmJHT0luIiwiYXBwWm9uZSI6ImF3cy5sYW1iZGEiLCJob3N0bmFtZSI6IjE2OS4yNTQuMzAuMTU3IiwiY2xpZW50bmFtZSI6ImF3cy50ZXN0Lmpvc2UuandzIn1dfQ",
+            "signature": "fRgjOSXZVkeVFn-GseaaLP1Yc3-8x-vZmF9PJaZDD7Z6dUYLbywzVQwmmzrLVQoD8Dg9aPLXgqLbSBiFTTXXuySG-mGaJdaLnz8z969EN0l68ZNPJfCSM2vJgyY46PHTZJ9Gv_Qg_iVXgnkm6wtnvFXGOhL_8DAKBHrqa9BbhffjR0E4u2glq5yOmnDFcm-awUjAdZNaZD5yJ6vIpznWxR4g5V5Y442RagW0lOoIR7nftZZv14D4OuzolevMEyf4J_Ta4jsektTl7izblamn0dRw01fPpal2n6U5-AeHaW6HDAlQD36-n7g2sb8Hh6Xo2Vo90t5B_9gAVyFG6nx4oQ",
+            "header": {
+                "kid": "signKey",
+                "alg": "RS256",
+                "cty": "application/json"
+            }
+        }
+
+        ,"verifyHttpRequest": "myVerifyJws"
+        ,"publicCertFileName": "./certs/jose_api.key.pem"
+        ,"publicCertFileType": "pem"
+    }
+    ,{
+        "id": "009"
+        ,"description": "Verify JWE Test"
+
+        ,"httpMethod": "POST"
+        ,"invokeUrl": "http://localhost:3000/api/bodyEcho"
+
+        ,"httpHeaders": {
+            "Connection": "keep-alive"
+            ,"Accept" : "application/json"
+            ,"Content-Type" : "application/json"
+        }
+        ,
+        "jsonData": {
+            "ciphertext": "iXuSu-pcWO1yS8USeucjFN5yTEi8lAVT1cRByJcbHf4IAkpFpo41A6LctDOxstl8A5kmcK2kYZo-_1t20O1a9wtC60G8MctWcKLFJkppKsNFNRtR58rqt8ToyYk1K8dhWsCsQGFhthGGvL0rggDOMH-38OwuxTo969m2PAKNf8AH1T5iI3lLO0_D_ubX6lucadg7stw3gZzmQRV9XTfDKuocr7Y1iVEOss_RUdEZXHj6QmVTiA9KHiCqurMTjiy12ToQyBfYLO4l56ejQd0nJlV-QLHKRFdHOrqcLc4ZPzBQjUAcvdzKsc_DUywzn0DKwMZK13YB8Y8ZM4QU_bWpQqqK8R4DldOMBgja16yY6KtmFGNb3LYuSlIKmyJl7C_MSjOmYZxTaPifgP_rzNzU6DtXoymSqo3uOlVCMRJ3qqtW2VvYZM2EHMLyRoNjJXXtnloLeDY_vOeu1JWnydwNjxrig9LcA87LATais07dXmBDXOEJZkluYrJJ9KnDIfkQwTUQE_XD3CovQvXmfVUky8oPMqoutPUexy7XslUTCjNXrrzgYjRK_Q8FyuX53r_2WdHs7pf7c8iH5EmmqyQ7kWveVeabvw86DvTg6DXHIN-4aHTN_JPv_96T3Vlx3eWLhh87_FGHIsvsMBD-mxUdJGrAyDKN2y-CsWYgomHjwK09bMeSiVwaDjBWB7nb2x9vOzGQ51-S59DskLjZvxgiP8KQsfBsgjklohwJUi3U77WlMMRvItWYknzYVNem_G4SdtVrU-ARhuuLZicPGnBloYl_JOzAMiJ6_cqKLyNcLdFNH56XqMftvTQ_rjPAByljoGFbI4FkJWqoikXpA3AqkQAJGZxMww3_Up_pEMZqZZY36ln-oOoNz8_uI5byJ7FJjkZ0RRAOf_RQ4NxDm7aMPSsISFAH7jk06JK2AS4jba6QfebyQurXwdXNkGlQzNufrIbcQ1cRtoASbVtTHayC7O-nWIkYczzVjUBLsbysZwRWQ3mnu0i8sCmE49uIRtl7INYnzABrur5Re90qkaWfh4yNvselUIsoWZRp-sdWeijtsfSasbfrlqhvfJpj3CrlF6ct1vWZkpeNhFK2K-uUmMqBqw_x1fAtgN_AwYXtnKgn6X6toZNH6KieuW7lx0cyyZ_rvobn8YeKPoFJAJaVfGwo8UZPgT3T1Jb-tRznCgxriUVynB5HuJDgGxU1CFOnkKkv6rWTxaivAk3nmzRp-3UdW_RJZQWHeLHQUTnE9oHCFbBFrZ3yfKw2fETC4-ZrPth8Bg7L5PxDzG7aFJcyPOJuVLHnSPCLZYR0SZVLJa6x-YTpWXMOvCsdiPtt_WWR6UWHWWuOqgO_EfflwJ3J8YELyQZqiKcwj2W8mkYkVWI",
+            "protected": "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiUlNBMV81Iiwia2lkIjoiZW5jcnlwdEtleSIsImN0eSI6ImFwcGxpY2F0aW9uL2pzb24ifQ",
+            "encrypted_key": "KFXdHX_X4yI67CQ1BxnmpDU9nKDQ26K8HizTdhh5TdOdjkU2FMhdC7m4pAkpZ11Q4Pw1Kg1XBq-kArBepVOLVdSh0F3gh6CupUBikiQos8YkAlXVyQwN1mutW47g_i3JX2DLWHG-flT-1CldmFA0mioBKZgw8l4ICAsWKgUu28VwN1flD-SkvvcrP-yIMCypRo0Amda8L9wAM6iGEBmRVY4R7x-FwESEiS0FSB9aLHZbBd0y_WIkRxS6ZLO4sK5ruoBcwpF5z1yDh_pH9WzJynTU1kNRxnNqHtfSnRQjFRrdCQdgS0-ci6ed0Zf00Cp8g8Zk3Z6obGLsPxTQcYMPSQ",
+            "header": {
+                "enc": "A128CBC-HS256",
+                "alg": "RSA1_5",
+                "kid": "encryptKey",
+                "cty": "application/json"
+            },
+            "tag": "CkVFk5zhUFGHRyqoAHAolA",
+            "iv": "73GAvRRrEprK9FDRSPw7Qg"
+        }
+
+        ,"verifyHttpRequest": "myVerifyJwe"
+        ,"privateCertFileName": "./certs/rest_api_eg.key.pem"
+        ,"privateCertFileType": "pem"
+    }
+    ,{
+        "id": "010"
+        ,"description": "Verify JWE/JWS Test"
+
+        ,"httpMethod": "POST"
+        ,"invokeUrl": "http://localhost:3000/api/bodyEcho"
+
+        ,"httpHeaders": {
+            "Connection": "keep-alive"
+            ,"Accept" : "application/json"
+            ,"Content-Type" : "application/json"
+        }
+        
+        ,"jsonData": {
+            "ciphertext": "am_WK7SbDvM2THeGi6rWsel06dHHx-Tlkeh4mfW5B7DftB7LUwhK4MM2A4VBgNUCB4CwdpjvZwlkx2WrYr16RZe3fG587sJcz-y_cCXSqYlovzBtKhGayPJJHp464pae9IDbEchdbAUM2-qPAjGxbrhxY_au27qvR8cL984fbgm-4Za2SHEM1K1944JwpEkYJZx0gxlZFXNdgMa_JA3Y1RHv6o4FUsdsy7fZlI5JDBHX5cMSrFOtSN1cWyJC-5PDx1AMBEGiVPg8cPhxCob-d-w5mhvXlKsD27YhqMaXq8regXc1ond9-QfevT2Yx6aiMhpquvjOywX-QKkwBvQPrblFkm3FpLmmfoXCJe5lFAJHhXtq3_izeVIhLqx9vuKLAxnuqCoKabiuVmNqPU1MRiupJtP0nqOfxHoM9h7VjJ0ooRPHvYx09HL5vacK2tYv_S7AoDZFqHke4wGhugUjIsMs-WdHopGTw-8f72dS15Nb82ptYWXIUt0NpMjSP_-4Ck_oUm_rIPXQMyomPbGGk5cs36T47B3RepjFDslov1qWne-LgI_8RCggxUvMnyYWQNwmm-0xEg3zMoBuSBso7G1qeQ-38L160LkTKcz6JYh_-YzkkI86YzEuQGMRyIQqtJJXKErN9QJYKy34AxWubmjqrc85Ir_7-59N3k1UXGtOw33sMt4SFnQHMpufz1Lta9Xqqp19nb0gQnvZhyNwU0b4VwzzXLadq3gbk2MatYxN2R1gGpitkOjbFtPnxhpk5ccFNhcBHswJW8L1MV4D8lxqi1wHHKWLab3rMOGhPCSWbL0EP3tgZ6JV5CkFzIq1ZMZvq4px5nLzkcfzmDJloEz-UbxrJlHEEWj42uerPjzutAWd_CbjEj9VOI45nSav9C0X0S5DulS8yY2oZdAV0e6iVh_hAmxS6Vv04NzwSk_7XsElT66-xSV57kyZE2GRcfY9g3ZmlbhGFpXvAXr_O93eY7Yk48eeD8RsTzBFSZzBtg04WHiKYG5vjTCaMe6wTq9zdcu-4HLP__-x4ufAZiOCV4GIanwgyF8qn5jNT_BlPNPn2UpZVjPhHjrP4l7NvVzG-Rnib-4foiYVO2uMMqmIKhgqzLrUenW1XchPWQDFOhZJoLNMJy4QKJHr9MuSbzKyFOnRP2LoqXoYZGsGpIcsJ-wEIOm3H-d0soGFGjY1WNyTkUt4RwVqdzkqH5vYKqbnZLU4qGWvM52VxRfeyZbQmi_WcwIGWMHtCt_ipKnYGDBrr2X2MJ0sQhEijDGiBAnMf5wQH3tKeVbKqrI21_7PS-LEisWsER33iH3DpwextSq4TXGkW3xPOlWpFbuf8uixXNU4GCi02taIKT4bGKiQOuTKzjYOc6S8qaQ7V10GVbTc6PCdUzG-fRZAaJk4mzTIyluxpKqNqctGa1Tm2O0LppwL-FJjZ3P8jW0xzJkDdHesO7CYHlUJGPh4hwWHcked-NFLUnfcW4qr7QR3xhuu3BHAtZJtt0ir9fRzyoFohy0Me41dSPE-6ckcVnS1gMsAAvyprOx9cU46tIX_3yL96XDnsQoSiemNxUPFMpBwljVM9PDho3a95ukC1AB1k7zGJ_kAaaoYp5857GapHb265l6hDhjWRwHcSGkFDmj5GFM8eXvr8dYFhCZNGh8AFP-8yXTkgM1gHXaw0nObeFfC0KiQ58mgNIsGeL5ye_ODibgGRRhhWkjSS-0MqW0paaJBmkhujvLYHDJiBEf9CM_m2ZyzN4xzrt0srCpkbpSLQiLJmeXcT9-7Jonexy4rz81zMyAdLcM3-rkljDBG9jxph90Ako4YcdE7vls6wAfesHLbrS_sTRaTw2cPFEiDr42mdG7kBrOicJDgqKxJxpIs-xLwGBdy_wZ1LHWwbKIX8kS2ra-eRW7JAhg9kOpP0PMRgw5Q3yKhL0hSgNsn_1FyKUlamhnqjB4_pOWwdLDzZPjsXXtFbsbxL6Gk_cjYFi7YvbLu8toOM0eM9jBt-F46-x4ZW7DTu13tTfKChbqcZJaoVoNPASYjYSFVoJG8xtrGwBx0cj8d-ty4houzvjAMYkX3buEHW3RTWJXC948HLWd9ZmJIEaTl5iObbQCURLlNM_qIdvayi7fREcctwv0qJZjWwnbZn3KTBV_mzm3oMc_U4z_mtSeFqsHzE18gcHQd-VlPtl6rz3wk8FsqBr22_BFLy0BNL6Tx0Vp3EGcaf_WOwQMq0qgyVxQEZ173I9qO3-b-drla6TVVkIPDqm4kYOo9zmtydeOj-Gl40D4Yjpuf1tEadhevN8k9BRQUfGov_mFCJIExIuQ0rFC_NH2TINbHBfOEh3cvYbuTOf8asrmiOgJfAjWtq7XYNg93bowgXmMaWNRGAsa1ZsaoNKe63r3An3kbEjs1lBNqdgJQBRSqsd0WUKlT9QPYMhcmXFIZblVZQltsf-hZ85CCstKtnPWoeYC_jndmNhVl6dvofuhJib1VtJSj8vphWqXhhGmRLAPMt71utdTVNDWQu3lkdkzF6oM1Gn06Dr4p_p8",
+            "protected": "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiUlNBMV81Iiwia2lkIjoiZW5jcnlwdEtleSIsImN0eSI6ImFwcGxpY2F0aW9uL2pzb24ifQ",
+            "encrypted_key": "nEen5HERLvUAzuEUfUaT5R0rTEwnAQn5GICQ24Ze2qbX1hv4XGKXSnYm_IgVsA-DAkjCilIwkbhzyLT9XQIG9knQwH1TqT4s4-Av6s86zaRF0MbzlBVle5jrIhe4LxBXpylFhQmgfNI6d2U3eeyQWvrr5GMjgItlyMW7zW1J7u06rpKBvrquZd0fHcoqUhWDe12YHWVeQn_dvufCJuaqncR_F3G59_DxE6p-rOmvL8d9-B20c8o5AzmzER8HhH6kvfQ9WLslnndOiSiPDASai25U8LUpSviNsTvGD5bQffXDiaLWVXAKdqpdJMgeV7TreBWkfq3T5GxUmQuxH3yFEw",
+            "header": {
+                "enc": "A128CBC-HS256",
+                "alg": "RSA1_5",
+                "kid": "encryptKey",
+                "cty": "application/json"
+            },
+            "tag": "_mThCwDN_BrzqA-t5O91HQ",
+            "iv": "i756hMUeFMAHCAllEWSSvw"
+        }
+
+        ,"verifyHttpRequest": "myVerifyJweJws"
+        ,"privateCertFileName": "./certs/rest_api_eg.key.pem"
+        ,"privateCertFileType": "pem"
+        ,"publicCertFileName": "./certs/jose_api.key.pem"
+        ,"publicCertFileType": "pem"
     }
 ]

@@ -12,6 +12,21 @@ helper.myVerifyJws = joseVerify.verifyJws;
 helper.myVerifyJwe = joseVerify.verifyJwe;
 helper.myVerifyJweJws = joseVerify.verifyJweJws;
 
+const minimistOptions = {
+    string: [ ], 
+    number: [ ],
+    boolean: [ 'skipTest', 'debug' ],
+    default: { 'skipTest': false, 'debug': false },
+    alias: {
+        s: 'skipTest'
+        ,d: 'debug'
+    },
+    unknown: function () { return false } 
+}
+
+var argv = require('minimist')(process.argv.slice(2), minimistOptions);
+//console.log(JSON.stringify(argv, null, 4))
+
 var localDebug = false;
 
 helper.preHttpRequest = function(param, response) {
@@ -46,7 +61,7 @@ helper.postHttpRequest = function(param, response) {
     if (response == undefined) message += " - Response undefined."
 
     if (response != undefined) {
-        message += "\n" + JSON.stringify(response, null, 4)
+        if (localDebug) message += "\n" + JSON.stringify(response, null, 4)
     }
 
     if (localDebug) console.log(message)
@@ -58,11 +73,11 @@ helper.setDefaultParam({
     // suppress the successful message, will not suppress error message is any
     suppressMessage: false,
     // display verbose debug message
-    debug: false,
+    debug: argv.debug,
     // show execution time
     showElapseTime: false,
     // skip a test
-    skipTest: false, 
+    skipTest: argv.skipTest, 
 
     batchPrefix: "<<<<<< Start >>>>>>",
     batchSuffix: "<<<<<<  End  >>>>>>",
@@ -82,6 +97,6 @@ Promise.resolve()
     .then(helper.displayTestResult).then(message => console.log("\n" + message))
     .then(helper.displayElapseTime).then(message => console.log("\n" + message + "\n"))
     .catch(function(error) { 
-        console.log(error);
+        console.log(error.stack);
     })
 ;

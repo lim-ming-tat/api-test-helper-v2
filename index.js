@@ -500,6 +500,7 @@ util.executeTest = (param) => {
 
                 // execute verification function from parameters
                 return util[param.verifyFunction](param, res).then(testResult => { 
+                    console.log("testResult:::" + testResult)
                     param.testPassed = testResult; 
                     return { response: res }
                 });
@@ -525,6 +526,8 @@ util.executeTest = (param) => {
                 });
             }
         }).catch(function(error) { 
+            //console.log(error.stack);
+
             param.error = error;
 
             if (param.negativeTest != undefined && param.negativeTest){
@@ -665,8 +668,12 @@ util.executeTest = (param) => {
             //message += indentation + "Failed - " + setColor.error(param.error.message) + "\n"
             if (param.error != undefined && param.error.message != undefined) {
                 message += "\n" + indentation + "Failed - " + setColor.error(param.error.message)
+                
+                if (param.debug && param.error.stack != undefined) {
+                    message += "\n" + indentation + param.error.stack.replace(/\n/g, "\n" + indentation);
+                }
             }
-            if (!param.debug && param.verifyMessage != undefined && param.verifyMessage != "") {
+            if (!param.debug && param.verifyMessage != undefined && param.verifyMessage.trim().length > 0) {
                 message += "\n" + indentation + "Validation failed - " + setColor.error(param.verifyMessage) 
             }
 

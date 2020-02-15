@@ -46,9 +46,9 @@ function verifyJws(param, response) {
             return jose.JWS.createVerify(jwsKey)
                 .verify(data)
                 .then(function(result) {
-                    param.verifyMessage += "JWS Response:::\n" + JSON.stringify(JSON.parse(result.payload.toString()), null, 4) + "\n";
+                     var message = "\nJWS Response:::\n" + JSON.stringify(JSON.parse(result.payload.toString()), null, 4);
 
-                    return true;
+                    return { result: true, message: message };
                 });
         });
 }
@@ -103,7 +103,8 @@ function verifyJose(param, response) {
             return jose.JWE.createDecrypt(jweKey)
                 .decrypt(data)
                 .then(function(result) {
-                    param.verifyMessage += "JWE Response:::\n" + JSON.stringify(JSON.parse(result.payload.toString()), null, 4) + "\n";
+                    //param.verifyMessage += 
+                    var message = "\nJWE Response:::\n" + JSON.stringify(JSON.parse(result.payload.toString()), null, 4);
 
                     if (param.verifyJweJws) {
                         var customResponse = {};
@@ -120,7 +121,8 @@ function verifyJose(param, response) {
                         return verifyJws(param, customResponse);
                     }
 
-                    return true;
+                    //return true;
+                    return { result: true, message: message };
                 });
         });
 }
