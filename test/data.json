@@ -1,0 +1,7 @@
+{
+    "id" : "1",
+    "description" : "Simple Parameter Template.",
+
+    "invokeUrl" : "http://www.example.com/",
+    "httpMethod" : "GET"
+}

@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./test/schemaValidation.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
   "homepage": "https://github.com/lim-ming-tat/api-test-helper-v2#readme",
   "dependencies": {
     "bluebird": "^3.7.2",
+    "isvalid": "^2.7.10",
     "lodash": "^4.17.15",
     "luxon": "^1.21.3",
     "node-apex-api-security": "github:GovTechSG/node-apex-api-security",

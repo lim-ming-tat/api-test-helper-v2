@@ -161,7 +161,9 @@ util.performTest = (params) => {
         .then(message => {
             if (defaultParam.suppressMessage == undefined || !defaultParam.suppressMessage)
             {
-                //console.log("\n<<<<<< Start >>>>>>\n" + message + "\n<<<<<< End >>>>>>")
+                if (defaultParam.batchPrefix == undefined) defaultParam.batchPrefix = "<<<<<< Start >>>>>>"
+                if (defaultParam.batchSuffix == undefined) defaultParam.batchSuffix = "<<<<<<  End  >>>>>>"
+
                 console.log(`\n${defaultParam.batchPrefix}${message}\n${defaultParam.batchSuffix}`)
             }
         });
@@ -372,12 +374,9 @@ util.getApexSecurityToken = (param) => {
     }
 }
 
-var defaultParam = undefined;
+var defaultParam = {};
 util.setDefaultParam = (defaultValue) => {
     defaultParam = defaultValue;
-
-    if (defaultParam.batchPrefix == undefined) defaultParam.batchPrefix = "== Start =="
-    if (defaultParam.batchSuffix == undefined) defaultParam.batchSuffix = "==  End  =="
 }
 
 util.getDefaultParam = () => {
