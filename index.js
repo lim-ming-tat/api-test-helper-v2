@@ -517,6 +517,13 @@ util.executeTest = (param) => {
 
             return requestResponse.response
         }).then( (response) => { 
+            // handle save data to session using saveMaps
+            // handle auto display using outputMaps
+            var postMessage = handelPostHttpRequestMaps(param)
+            if (postMessage.trim().length > 0) {
+                childMessage += indentation + postMessage.replace(/\n/g, "\n" + indentation)
+            }
+
             if (param.postHttpRequest != undefined) {
                 // execute post Http Request function from parameters
                 return util[param.postHttpRequest](param, response).then(message => { 
@@ -854,4 +861,97 @@ for (var i = 0; i < funcNames.length; i++) {
 
 module.exports = {
     apiHelper : util
+};
+
+// credit: https://www.sitepoint.com/sort-an-array-of-objects-in-javascript/
+function compareValues(key, order = 'asc') {
+    return function innerSort(a, b) {
+      if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
+        // property doesn't exist on either object
+        return 0;
+      }
+  
+      const varA = (typeof a[key] === 'string')
+        ? a[key].toUpperCase() : a[key];
+      const varB = (typeof b[key] === 'string')
+        ? b[key].toUpperCase() : b[key];
+  
+      let comparison = 0;
+      if (varA > varB) {
+        comparison = 1;
+      } else if (varA < varB) {
+        comparison = -1;
+      }
+      return (
+        (order === 'desc') ? (comparison * -1) : comparison
+      );
+    };
+  }
+
+function handelPostHttpRequestMaps(param) {
+    var index = 0;
+    var message = "";
+
+    if (param.saveMaps != undefined) {
+        param.saveMaps.forEach(item => {
+            if (item.propertyName == ".") {
+                _.set(param.sessionData, item.sessionName, param.responseBody);
+            } else {
+                _.set(param.sessionData, item.sessionName, _.get(param.responseBody, item.propertyName));
+            }
+        });
+    }
+
+    if (param.outputMaps != undefined && Array.isArray(param.outputMaps) && param.outputMaps.length > 0) {
+        //message += "\n" + JSON.stringify(param.outputMaps, null, 4)
+        //message += "\n" + JSON.stringify(param.responseBody, null, 4)
+
+        param.outputMaps.forEach(outputMap => {
+            //var dataRows = _.get(param.responseBody, "channel.item")
+            var dataRows = _.get(param.responseBody, outputMap.dataPath)
+            //message += "\n" + JSON.stringify(dataRows, null, 4)
+
+            if (!Array.isArray(dataRows)) {
+                dataRows = [ dataRows ]
+            }
+
+            dataRows.sort(compareValues(outputMap.dataValue))
+            .filter(items => {
+                // sort the items
+                //var sortedItems = items.sort(compareValues(outputMap.dataValue));
+
+                // select the required item from return data
+                //return _.get(item, "title").startsWith(param.sessionData.searchBy);
+                if (outputMap.dataFilter != undefined) {
+                    return _.get(items, outputMap.dataFilter.dataPath).startsWith(outputMap.dataFilter.dataValue);
+                } else {
+                    return items;
+                }
+            })
+            .forEach(item => {
+                // source data
+                //console.log(JSON.stringify(item.EntityReference, null, 4));
+        
+                // set the message id for debugging
+                //console.log(">>" + ++index + ". " + item.title);
+                //message += "\n>> ====" + ++index + ". " + _.get(item, "title")
+                if (outputMap.outputFormat == undefined) {
+                    message += "\n>> " + ++index + ". " + _.get(item, outputMap.dataValue)
+                } else {
+                    var newValue = outputMap.outputFormat.replace(/{{dataValue}}/g, _.get(item, outputMap.dataValue))
+                    if (newValue.search(/{{index}}/g) > -1) {
+                        newValue = newValue.replace(/{{index}}/g, ++index)
+                    }
+
+                    message += "\n>> " + newValue
+                }
+            });
+        });
+
+        if (index == 0) message = `\n>> Not found.`
+    }
+
+    //helper.displaySessionData().then(message => console.log("\n" + message));
+
+    return message
 };
