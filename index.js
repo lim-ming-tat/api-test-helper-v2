@@ -518,11 +518,7 @@ util.executeTest = (param) => {
             return requestResponse.response
         }).then( (response) => { 
             // handle save data to session using saveMaps
-            // handle auto display using outputMaps
-            var postMessage = handelPostHttpRequestMaps(param)
-            if (postMessage.trim().length > 0) {
-                childMessage += indentation + postMessage.replace(/\n/g, "\n" + indentation)
-            }
+            applySaveMaps(param)
 
             if (param.postHttpRequest != undefined) {
                 // execute post Http Request function from parameters
@@ -540,16 +536,16 @@ util.executeTest = (param) => {
                 param.testPassed = true;
             }
         }).finally( () => { return resolve() });
-/*
-    }).then( () => { 
-        if (param.postHttpRequest != undefined) {
-            // execute post Http Request function from parameters
-            return util[param.postHttpRequest](param).then(message => { 
-                if (message.trim().length > 0)
-                    childMessage += indentation + message.replace(/\n/g, "\n" + indentation)
-            });
+    }).then( () => {
+        // insert nextHop param based on return recordset from current api call
+        var message = applyNextHopMaps(param)
+        if (message.trim().length > 0) childMessage += indentation + message.replace(/\n/g, "\n" + indentation)
+
+        // handle auto display using outputMaps
+        var postMessage = applyOutputMaps(param)
+        if (postMessage.trim().length > 0) {
+            childMessage += indentation + postMessage.replace(/\n/g, "\n" + indentation)
         }
-*/
     }).then( () => { 
         if (param.nextHopParams != undefined && param.nextHopParams.length > 0) {
             return util.performTestInternal(param.nextHopParams).then( message => {
@@ -888,47 +884,96 @@ function compareValues(key, order = 'asc') {
     };
   }
 
-function handelPostHttpRequestMaps(param) {
-    var index = 0;
-    var message = "";
-
-    if (param.saveMaps != undefined) {
+function applySaveMaps(param) {
+    if (param.saveMaps != undefined && Array.isArray(param.saveMaps)) {
         param.saveMaps.forEach(item => {
-            if (item.propertyName == ".") {
-                _.set(param.sessionData, item.sessionName, param.responseBody);
+            //console.log(JSON.stringify(item, null, 4))
+
+            if (item.propertyName == undefined) {
+                if (item.dataType != undefined && item.dataType == "array") {
+                    _.set(param.sessionData, item.sessionName, [])
+                } else if (item.dataType != undefined && item.dataType == "object") {
+                    _.set(param.sessionData, item.sessionName, {})
+                } else if (item.dataType != undefined && item.dataType == "number") {
+                    _.set(param.sessionData, item.sessionName, 0)
+                } else {
+                    _.set(param.sessionData, item.sessionName, "")
+                }
             } else {
-                _.set(param.sessionData, item.sessionName, _.get(param.responseBody, item.propertyName));
+                var sourceData = _.get(param.sessionData, item.sessionName)
+
+                if (item.dataType != undefined && item.dataType == "array") {
+                    if (sourceData == undefined) {
+                        //param.sessionData[item.sessionName] = []
+                        _.set(param.sessionData, item.sessionName, [])
+                        sourceData = _.get(param.sessionData, item.sessionName)
+                    }
+
+                    sourceData.push(_.cloneDeep(_.get(param, item.propertyName)))
+                } else if (item.dataType != undefined && item.dataType == "object") {
+                    if (sourceData == undefined) {
+                        _.set(param.sessionData, item.sessionName, {})
+                        sourceData = _.get(param.sessionData, item.sessionName)
+                    }
+
+                    _.set(sourceData, item.objectPropertyName, _.get(param, item.propertyName));
+                } else {
+                    _.set(param.sessionData, item.sessionName, _.get(param, item.propertyName));
+                }
             }
         });
     }
+}
+
+function applyOutputMaps(param) {
+    var index = 0;
+    var message = "";
 
     if (param.outputMaps != undefined && Array.isArray(param.outputMaps) && param.outputMaps.length > 0) {
         //message += "\n" + JSON.stringify(param.outputMaps, null, 4)
         //message += "\n" + JSON.stringify(param.responseBody, null, 4)
 
         param.outputMaps.forEach(outputMap => {
+            //reset counter
+            index = 0;
+            
             //var dataRows = _.get(param.responseBody, "channel.item")
-            var dataRows = _.get(param.responseBody, outputMap.dataPath)
+            var dataRows = null
+            if (outputMap.dataPath == ".") {
+                dataRows = param
+            } else {
+                dataRows = _.get(param, outputMap.dataPath)
+            }
             //message += "\n" + JSON.stringify(dataRows, null, 4)
 
             if (!Array.isArray(dataRows)) {
                 dataRows = [ dataRows ]
             }
 
-            dataRows.sort(compareValues(outputMap.dataValue))
-            .filter(items => {
+            if (outputMap.sortOrder != undefined) {
+                var sortBy = outputMap.propertyName
+                var orderBy = "asc"
+
+                if (outputMap.sortOrder.sortBy != undefined) sortBy = outputMap.sortOrder.sortBy
+                if ((outputMap.sortOrder.orderBy == "asc" || outputMap.sortOrder.orderBy == "desc")) orderBy = outputMap.sortOrder.orderBy
+
+                dataRows = dataRows.sort(compareValues(sortBy, orderBy))
+            }
+
+            dataRows.filter(items => {
                 // sort the items
-                //var sortedItems = items.sort(compareValues(outputMap.dataValue));
+                //var sortedItems = items.sort(compareValues(outputMap.propertyName));
 
                 // select the required item from return data
                 //return _.get(item, "title").startsWith(param.sessionData.searchBy);
                 if (outputMap.dataFilter != undefined) {
-                    return _.get(items, outputMap.dataFilter.dataPath).startsWith(outputMap.dataFilter.dataValue);
+                    return _.get(items, outputMap.dataFilter.dataPath).startsWith(outputMap.dataFilter.startsWith);
                 } else {
                     return items;
                 }
             })
             .forEach(item => {
+                ++index
                 // source data
                 //console.log(JSON.stringify(item.EntityReference, null, 4));
         
@@ -936,22 +981,132 @@ function handelPostHttpRequestMaps(param) {
                 //console.log(">>" + ++index + ". " + item.title);
                 //message += "\n>> ====" + ++index + ". " + _.get(item, "title")
                 if (outputMap.outputFormat == undefined) {
-                    message += "\n>> " + ++index + ". " + _.get(item, outputMap.dataValue)
+                    //message += "\n>> " + index + ". " + _.get(item, outputMap.propertyName)
+                    message += `\n>> ${index}. ${outputMap.contentType == "json" ? JSON.stringify(_.get(item, outputMap.propertyName), null, 4) : _.get(item, outputMap.propertyName)}`
                 } else {
-                    var newValue = outputMap.outputFormat.replace(/{{dataValue}}/g, _.get(item, outputMap.dataValue))
+                    var newValue = outputMap.outputFormat.replace(/{{propertyName}}/g, outputMap.contentType == "json" ? JSON.stringify(_.get(item, outputMap.propertyName), null, 4) : _.get(item, outputMap.propertyName))
                     if (newValue.search(/{{index}}/g) > -1) {
-                        newValue = newValue.replace(/{{index}}/g, ++index)
-                    }
+                        newValue = newValue.replace(/{{index}}/g, index)
+                    } 
 
-                    message += "\n>> " + newValue
+                    message += newValue
                 }
             });
         });
 
-        if (index == 0) message = `\n>> Not found.`
+        if (index == 0) message += `\n>> no record found.`
     }
 
     //helper.displaySessionData().then(message => console.log("\n" + message));
 
     return message
 };
+
+function applyNextHopMaps(param) {
+    var index = 0;
+    var message = ""
+
+    //process nextHopMaps
+    if (param.nextHopMaps != undefined && Array.isArray(param.nextHopMaps) && param.nextHopMaps.length > 0) {
+        //message += "\n" + JSON.stringify(param.nextHopMaps, null, 4)
+
+        param.nextHopMaps
+        .forEach(nextHopMap => {
+            //reset counter
+            index = 0;
+
+            var dataRows = null
+            if (nextHopMap.dataPath == ".") {
+                dataRows = param
+            } else {
+                dataRows = _.get(param, nextHopMap.dataPath)
+            }
+            //message += "\n" + JSON.stringify(dataRows, null, 4)
+
+            if (dataRows == undefined) {
+                dataRows = [ ]
+            } else if (!Array.isArray(dataRows)) {
+                dataRows = [ dataRows ]
+            }
+
+            // get the json param template for nextHop
+            var templateSting = JSON.stringify(_.get(param, nextHopMap.paramTemplateName))
+            
+            if (nextHopMap.sortOrder != undefined) {
+                var sortBy = nextHopMap.propertyName
+                var orderBy = "asc"
+
+                if (nextHopMap.sortOrder.sortBy != undefined) sortBy = nextHopMap.sortOrder.sortBy
+                if ((nextHopMap.sortOrder.orderBy == "asc" || nextHopMap.sortOrder.orderBy == "desc")) orderBy = nextHopMap.sortOrder.orderBy
+                
+                dataRows = dataRows.sort(compareValues(sortBy, orderBy))
+            }
+
+            dataRows.filter(items => {
+                // select the required item from return data
+                if (nextHopMap.dataFilter != undefined) {
+                    if (nextHopMap.dataFilter.startsWith != undefined) {
+                        return _.get(items, nextHopMap.dataFilter.dataPath).startsWith(nextHopMap.dataFilter.startsWith);
+                    }
+
+                    if (nextHopMap.dataFilter.notEqual != undefined) {
+                        return _.get(items, nextHopMap.dataFilter.dataPath) != _.get(items, nextHopMap.dataFilter.notEqual.dataPath) ? items : undefined;
+                    }
+
+                    if (nextHopMap.dataFilter.equal != undefined) {
+                        return _.get(items, nextHopMap.dataFilter.dataPath) == _.get(items, nextHopMap.dataFilter.equal.dataPath) ? items : undefined;
+                    }
+                    if (nextHopMap.dataFilter.greaterThan != undefined) {
+                        //console.log(JSON.stringify(nextHopMap.dataFilter, null, 4))
+                        //console.log(JSON.stringify(_.get(items, nextHopMap.dataFilter.dataPath), null, 4))
+                        //console.log(JSON.stringify(_.get(items, nextHopMap.dataFilter.dataPath) > nextHopMap.dataFilter.greaterThan.dataValue, null, 4))
+                        if (nextHopMap.dataFilter.greaterThan.dataPath != undefined) {
+                            return _.get(items, nextHopMap.dataFilter.dataPath) > _.get(items, nextHopMap.dataFilter.greaterThan.dataPath) ? items : undefined;
+                        } if (nextHopMap.dataFilter.greaterThan.dataValue != undefined) {
+                            return _.get(items, nextHopMap.dataFilter.dataPath) > nextHopMap.dataFilter.greaterThan.dataValue ? items : undefined;
+                        }
+                    }
+                } else {
+                    return items;
+                }
+            })
+            .forEach(item => {
+                ++index;
+                // create param from template
+                var template = JSON.parse(templateSting);
+
+                // set the message id for debugging
+                template.id = `${param.id}.${index}`;
+
+                // replace the template property with item property
+                //template.invokeUrl = template.invokeUrl.replace(/{{Key}}/g, item.Key);
+                applyNextHopReplaceMaps(nextHopMap.replaceMaps, template, item)
+
+                // add the parameters for subsequence execution...
+                param.nextHopParams.push(template);
+            })
+        
+            if (index == 0 && nextHopMap.notFoundMessage != undefined) {
+                message += nextHopMap.notFoundMessage
+            }
+        })
+    }
+
+    return message
+};
+
+function applyNextHopReplaceMaps(replaceMaps, template, dataRow) {
+    // replace property value with value from sessionData
+    if (replaceMaps != undefined) {
+        replaceMaps.forEach(item => {
+            if (typeof _.get(template, item.propertyName) == "string") {
+                var replace = "{{" + item.replaceValue + "}}";
+                var regex = new RegExp(replace, "g");
+
+                _.set(template, item.propertyName, _.get(template, item.propertyName).replace(regex, _.get(dataRow, item.replaceValue)));
+            } else {
+                _.set(template, item.propertyName, _.get(dataRow, item.replaceValue));
+            }
+        });
+    }
+}

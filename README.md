@@ -6,6 +6,8 @@ Helper Library to test API
 mkdir newProject
 cd newProject
 npm init -y
+touch data.json
+touch index.js
 ```
 
 2. Get the test helper package.
