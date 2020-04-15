@@ -1,0 +1,467 @@
+{
+    "dataFilter": {
+        "dataFilter_startWith": {
+            "propertyName": "Name",
+            "startWith": "pattern1|pattern2"
+        },
+
+        "dataFilter_equal_propertyName": {
+            "propertyName": "activeVersion",
+            "equal": {
+                "propertyName": "version"
+            }
+        },
+        "dataFilter_equal_dataValue": {
+            "propertyName": "nextHopParams.length",
+            "equal": {
+                "dataValue": 0
+            }
+        },
+
+        "dataFilter_notEqual_propertyName": {
+            "propertyName": "activeVersion",
+            "notEqual": {
+                "propertyName": "version"
+            }
+        },
+        "dataFilter_notEqual_dataValue": {
+            "propertyName": "nextHopParams.length",
+            "notEqual": {
+                "dataValue": 0
+            }
+        },
+
+        "dataFilter_greaterThan_propertyName": {
+            "propertyName": "activeVersion",
+            "greaterThan": {
+                "propertyName": "version"
+            }
+        },
+        "dataFilter_greaterThan_dataValue": {
+            "propertyName": "nextHopParams.length",
+            "greaterThan": {
+                "dataValue": 0
+            }
+        }
+    },
+
+    "param_dataFilter": {
+        "param": {
+            "responseBody": {
+                "channel": {
+                    "title": "Businesses",
+                    "item": [{
+                            "title": "Tenant - awslab",
+                            "activeVersion" : 1,
+                            "version" : 2,
+                            "category": [{
+                                "value": "business",
+                                "domain": "uddi:soa.com:resourcetype"
+                            }],
+                            "guid": {
+                                "value": "tenantbusiness.awslab"
+                            }
+                        },
+                        {
+                            "title": "HDB",
+                            "description": "The Housing & Development Board (HDB) public housing authority of Singapore.",
+                            "activeVersion" : 2,
+                            "version" : 3,
+                            "category": [{
+                                "value": "business",
+                                "domain": "uddi:soa.com:resourcetype"
+                            }],
+                            "guid": {
+                                "value": "489c0be5-995c-444c-97e9-78f3324d67e1.awslab"
+                            }
+                        },
+                        {
+                            "title": "HDB Project 1",
+                            "description": "The Housing & Development Board (HDB) public housing authority of Singapore Project 1.",
+                            "activeVersion" : 3,
+                            "version" : 3,
+                            "category": [{
+                                "value": "business",
+                                "domain": "uddi:soa.com:resourcetype"
+                            }],
+                            "guid": {
+                                "value": "a8a8da4e-1a81-4870-b51a-836237aebaa0.awslab"
+                            }
+                        },
+                        {
+                            "title": "HDB Project 2",
+                            "description": "The Housing & Development Board (HDB) public housing authority of Singapore Project 2.",
+                            "activeVersion" : 3,
+                            "version" : 4,
+                            "category": [{
+                                "value": "business",
+                                "domain": "uddi:soa.com:resourcetype"
+                            }],
+                            "guid": {
+                                "value": "3de74cc6-75e9-43c5-bf6a-87013da69e46.awslab"
+                            }
+                        },
+                        {
+                            "title": "HDB Intranet",
+                            "description": "The Housing & Development Board (HDB) public housing authority of Singapore.",
+                            "activeVersion" : 2,
+                            "version" : 3,
+                            "category": [{
+                                "value": "business",
+                                "domain": "uddi:soa.com:resourcetype"
+                            }],
+                            "guid": {
+                                "value": "25fee4a4-98a1-4dec-a32c-84e6a55c5b8f.awslab"
+                            }
+                        },
+                        {
+                            "title": "CPF",
+                            "description": "The Central Provident Fund (CPF) of Singapore.",
+                            "activeVersion" : 2,
+                            "version" : 2,
+                            "category": [{
+                                "value": "business",
+                                "domain": "uddi:soa.com:resourcetype"
+                            }],
+                            "guid": {
+                                "value": "c153a3dc-e537-4541-b96f-c493c453b02a.awslab"
+                            }
+                        },
+                        {
+                            "title": "CPF Project 1",
+                            "description": "The Central Provident Fund (CPF) of Singapore Project 1.",
+                            "activeVersion" : 3,
+                            "version" : 3,
+                            "category": [{
+                                "value": "business",
+                                "domain": "uddi:soa.com:resourcetype"
+                            }],
+                            "guid": {
+                                "value": "64921f2a-32fb-40d6-aa5a-9b8eb214d5a1.awslab"
+                            }
+                        },
+                        {
+                            "title": "CPF Project 2",
+                            "description": "The Central Provident Fund (CPF) of Singapore Project 2.",
+                            "activeVersion" : 3,
+                            "version" : 4,
+                            "category": [{
+                                "value": "business",
+                                "domain": "uddi:soa.com:resourcetype"
+                            }],
+                            "guid": {
+                                "value": "54f9bc10-36a2-4d6d-8882-470cfde822bb.awslab"
+                            }
+                        },
+                        {
+                            "title": "CPF Intranet",
+                            "description": "The Central Provident Fund (CPF) of Singapore.",
+                            "activeVersion" : 2,
+                            "version" : 5,
+                            "category": [{
+                                "value": "business",
+                                "domain": "uddi:soa.com:resourcetype"
+                            }],
+                            "guid": {
+                                "value": "1abed879-283e-46ee-8c3b-43b40a7190f2.awslab"
+                            }
+                        },
+                        {
+                            "title": "GovTech",
+                            "description": "Government Technology Agency (GovTech) of Singapore.",
+                            "activeVersion" : 2,
+                            "version" : 5,
+                            "category": [{
+                                "value": "business",
+                                "domain": "uddi:soa.com:resourcetype"
+                            }],
+                            "guid": {
+                                "value": "6094af16-5ec6-4566-ab3b-b65d8e6d94cf.awslab"
+                            }
+                        },
+                        {
+                            "title": "GovTech Intranet",
+                            "activeVersion" : 2,
+                            "version" : 5,
+                            "description": "Government Technology Agency (GovTech) of Singapore.",
+                            "category": [{
+                                "value": "business",
+                                "domain": "uddi:soa.com:resourcetype"
+                            }],
+                            "guid": {
+                                "value": "0c5744c8-fde9-4e6e-a724-8bcc4073c120.awslab"
+                            }
+                        }
+                    ]
+                },
+                "version": "1.0"
+            },
+
+            "sessionData": {},
+
+            "saveMaps": [
+                {
+                    "dataPath": "responseBody.channel.item",
+                    "sessionName": "agencyList",
+
+                    "properties": [
+                        {
+                            "propertyName": "title",
+                            "objectPropertyName": "agencyName"
+                        },
+                        {
+                            "propertyName": "guid.value",
+                            "objectPropertyName": "businessKey"
+                        }
+                    ]
+                }
+            ],
+            
+            "outputMaps": [
+                {
+                    "dataPath" : "responseBody.channel",
+                    "propertyName" : "title",
+                    "outputFormat" : "\n>> {{propertyName}} <<"
+                },
+                {
+                    "dataPath" : "responseBody.channel.item",
+                    "propertyName" : "title",
+                    "sortOrder" : {
+                        "sortBy" : "title",
+                        "orderBy" : "asc"
+                    }
+                }
+            ]
+        },
+
+        "baselineResults": 
+        {
+            "agencyList": [
+                {
+                    "agencyName": "Tenant - awslab",
+                    "businessKey": "tenantbusiness.awslab"
+                },
+                {
+                    "agencyName": "HDB",
+                    "businessKey": "489c0be5-995c-444c-97e9-78f3324d67e1.awslab"
+                },
+                {
+                    "agencyName": "HDB Project 1",
+                    "businessKey": "a8a8da4e-1a81-4870-b51a-836237aebaa0.awslab"
+                },
+                {
+                    "agencyName": "HDB Project 2",
+                    "businessKey": "3de74cc6-75e9-43c5-bf6a-87013da69e46.awslab"
+                },
+                {
+                    "agencyName": "HDB Intranet",
+                    "businessKey": "25fee4a4-98a1-4dec-a32c-84e6a55c5b8f.awslab"
+                },
+                {
+                    "agencyName": "CPF",
+                    "businessKey": "c153a3dc-e537-4541-b96f-c493c453b02a.awslab"
+                },
+                {
+                    "agencyName": "CPF Project 1",
+                    "businessKey": "64921f2a-32fb-40d6-aa5a-9b8eb214d5a1.awslab"
+                },
+                {
+                    "agencyName": "CPF Project 2",
+                    "businessKey": "54f9bc10-36a2-4d6d-8882-470cfde822bb.awslab"
+                },
+                {
+                    "agencyName": "CPF Intranet",
+                    "businessKey": "1abed879-283e-46ee-8c3b-43b40a7190f2.awslab"
+                },
+                {
+                    "agencyName": "GovTech",
+                    "businessKey": "6094af16-5ec6-4566-ab3b-b65d8e6d94cf.awslab"
+                },
+                {
+                    "agencyName": "GovTech Intranet",
+                    "businessKey": "0c5744c8-fde9-4e6e-a724-8bcc4073c120.awslab"
+                }
+            ]
+        }
+    },
+
+
+
+    "param1": {
+        "responseBody": {
+            "DeploymentZoneInfo": [{
+                    "DeploymentZoneID": "8a761839-cca2-4269-aef4-cf9fd328777d.awslab",
+                    "Name": "AWS CPF LAB Gateway",
+                    "Description": "Created by API...",
+                    "ContainerKey": "34e6d36c-1f71-4211-bc55-490e4b75",
+                    "ContainerName": "AWS API Cluster",
+                    "ContainerCount": 2,
+                    "ContainerAssigned": 2,
+                    "AddressOverrideBehavior": "com.akana.dontallow",
+                    "RandomHostNameBehavior": "com.akana.dontallow",
+                    "VirtualHostSupported": false,
+                    "DeploymentZoneAccessPoint": [{
+                        "Protocol": "https",
+                        "Name": "default-https0",
+                        "Address": "https://awslab.e.api.gw2.gdshive.com:443"
+                    }],
+                    "DZoneEnvImplAssociations": {
+                        "DZoneEnvImplAssociation": [{
+                            "Implementation": "Live",
+                            "Environment": "Production"
+                        }]
+                    }
+                },
+                {
+                    "DeploymentZoneID": "af1e8c4f-09d2-4119-8c49-ff2844383b62.awslab",
+                    "Name": "CPF API Gateway",
+                    "Description": "CPF API Gateway",
+                    "ContainerKey": "6ccfab2d-3fa7-4181-8bf1-aa02697d",
+                    "ContainerName": "CPF API Gateway",
+                    "ContainerCount": 3,
+                    "ContainerAssigned": 5,
+                    "AddressOverrideBehavior": "com.akana.dontallow",
+                    "RandomHostNameBehavior": "com.akana.dontallow",
+                    "VirtualHostSupported": false,
+                    "DeploymentZoneAccessPoint": [{
+                        "Protocol": "https",
+                        "Name": "default-https0",
+                        "Address": "https://cpf.e.api.gw2.gdshive.com:443"
+                    }],
+                    "DZoneEnvImplAssociations": {
+                        "DZoneEnvImplAssociation": [{
+                                "Implementation": "Live",
+                                "Environment": "Production"
+                            },
+                            {
+                                "Implementation": "Sandbox",
+                                "Environment": "Production"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "DeploymentZoneID": "998b3e5a-9a91-4205-a3e7-0408653ac1e2.awslab",
+                    "Name": "HDB API Gateway",
+                    "Description": "HDB API Gateway",
+                    "ContainerKey": "38c2e60f-49a1-4a2a-9385-eb26eb47",
+                    "ContainerName": "HDB API Gateway",
+                    "ContainerCount": 4,
+                    "ContainerAssigned": 2,
+                    "AddressOverrideBehavior": "com.akana.dontallow",
+                    "RandomHostNameBehavior": "com.akana.dontallow",
+                    "VirtualHostSupported": false,
+                    "DeploymentZoneAccessPoint": [{
+                        "Protocol": "https",
+                        "Name": "default-https0",
+                        "Address": "https://hdb.e.api.gw2.gdshive.com:443"
+                    }],
+                    "DZoneEnvImplAssociations": {
+                        "DZoneEnvImplAssociation": [{
+                                "Implementation": "Live",
+                                "Environment": "Production"
+                            },
+                            {
+                                "Implementation": "Sandbox",
+                                "Environment": "Production"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "sessionData": {},
+        "saveMaps": [
+            {
+                "sessionName": "myString",
+                "propertyName": "responseBody.DeploymentZoneInfo[0].Name"
+            },
+            {
+                "sessionName": "myArray",
+                "propertyName": "responseBody.DeploymentZoneInfo[0].Name",
+                "dataType" : "array"
+            },
+            {
+                "sessionName": "myObject",
+                "propertyName": "responseBody.DeploymentZoneInfo[0].Name",
+                "dataType" : "object",
+                "objectPropertyName" : "name"
+            },
+            {
+                "dataPath": "responseBody.DeploymentZoneInfo",
+                "sessionName": "deploymentZones",
+                "properties": [{
+                        "propertyName": "DeploymentZoneID",
+                        "objectPropertyName": "deploymentZoneID"
+                    },
+                    {
+                        "propertyName": "Name",
+                        "objectPropertyName": "name"
+                    },
+                    {
+                        "propertyName": "ContainerCount",
+                        "objectPropertyName": "containerCount"
+                    },
+                    {
+                        "propertyName": "ContainerAssigned",
+                        "objectPropertyName": "containerAssigned"
+                    }
+                ]
+            }
+        ]
+    },
+    "param2": {
+        "sessionData": {},
+        "saveMaps": [{
+                "sessionName": "initArray",
+                "dataType": "array"
+            },
+            {
+                "sessionName": "initObject",
+                "dataType": "object"
+            },
+            {
+                "sessionName": "initNumber",
+                "dataType": "number"
+            },
+            {
+                "sessionName": "initString1",
+                "dataType": "randomStringOrNothing"
+            },
+            {
+                "sessionName": "initString2"
+            }
+        ]
+    },
+    "param3": {
+        "gatewayName": "awslab",
+        "responseBody": {
+            "userName": "adminawslab",
+            "userFDN": "7d146b36-bf94-402a-a2bc-31a708a21089.awslab",
+            "avatarURL": "https://awslab.cm.gw2.gdshive.com:443/api/users/avatar/_VwrvJmUF_3coV8d3DwOs2YQ",
+            "pendingNotifications": 0,
+            "status": "success",
+            "loginState": "login.complete",
+            "loginDomainID": "siteusers.awslab",
+            "lastLoginDate": "2020-04-11T06:54:29Z",
+            "authTokenValidUntil": "2020-04-11T10:17:51.756Z"
+        },
+        "sessionData": {},
+        "saveMaps": [
+            {
+                "dataPath": ".",
+                "sessionName": "users",
+                "properties": [
+                    {
+                        "propertyName": "responseBody.userName",
+                        "objectPropertyName": "userName"
+                    },
+                    {
+                        "propertyName": "responseBody.userFDN",
+                        "objectPropertyName": "userFdn"
+                    }
+                ]
+            }
+        ]
+    }
+}

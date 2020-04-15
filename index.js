@@ -10,6 +10,8 @@ const { URL } = require('url');
 const _ = require("lodash");
 
 const apex = require('node-apex-api-security').ApiSigningUtil;
+const mapsHelperLib = require('./lib/mapsHelperLib');
+let { PropertyUndefinedError } = require('./lib/errors');
 
 //const dateFormat = require('./timestamp').dateFormat;
 const { DateTime } = require("luxon");
@@ -518,7 +520,7 @@ util.executeTest = (param) => {
             return requestResponse.response
         }).then( (response) => { 
             // handle save data to session using saveMaps
-            applySaveMaps(param)
+            mapsHelperLib.applySaveMaps(param)
 
             if (param.postHttpRequest != undefined) {
                 // execute post Http Request function from parameters
@@ -538,11 +540,11 @@ util.executeTest = (param) => {
         }).finally( () => { return resolve() });
     }).then( () => {
         // insert nextHop param based on return recordset from current api call
-        var message = applyNextHopMaps(param)
+        var message = mapsHelperLib.applyNextHopMaps(param)
         if (message.trim().length > 0) childMessage += indentation + message.replace(/\n/g, "\n" + indentation)
 
         // handle auto display using outputMaps
-        var postMessage = applyOutputMaps(param)
+        var postMessage = mapsHelperLib.applyOutputMaps(param)
         if (postMessage.trim().length > 0) {
             childMessage += indentation + postMessage.replace(/\n/g, "\n" + indentation)
         }
@@ -859,254 +861,81 @@ module.exports = {
     apiHelper : util
 };
 
-// credit: https://www.sitepoint.com/sort-an-array-of-objects-in-javascript/
-function compareValues(key, order = 'asc') {
-    return function innerSort(a, b) {
-      if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
-        // property doesn't exist on either object
-        return 0;
-      }
-  
-      const varA = (typeof a[key] === 'string')
-        ? a[key].toUpperCase() : a[key];
-      const varB = (typeof b[key] === 'string')
-        ? b[key].toUpperCase() : b[key];
-  
-      let comparison = 0;
-      if (varA > varB) {
-        comparison = 1;
-      } else if (varA < varB) {
-        comparison = -1;
-      }
-      return (
-        (order === 'desc') ? (comparison * -1) : comparison
-      );
-    };
-  }
 
-function applySaveMaps(param) {
+/*
+  function applySaveMaps(param) {
     if (param.saveMaps != undefined && Array.isArray(param.saveMaps)) {
-        param.saveMaps.forEach(item => {
-            //console.log(JSON.stringify(item, null, 4))
-
-            if (item.propertyName == undefined) {
-                if (item.dataType != undefined && item.dataType == "array") {
-                    _.set(param.sessionData, item.sessionName, [])
-                } else if (item.dataType != undefined && item.dataType == "object") {
-                    _.set(param.sessionData, item.sessionName, {})
-                } else if (item.dataType != undefined && item.dataType == "number") {
-                    _.set(param.sessionData, item.sessionName, 0)
-                } else {
-                    _.set(param.sessionData, item.sessionName, "")
+        param.saveMaps.forEach(saveMap => {
+            //console.log(JSON.stringify(saveMap, null, 4))
+            if (saveMap.dataPath != undefined) {
+                var sourceData = _.get(param.sessionData, saveMap.sessionName)
+                if (sourceData == undefined) {
+                    //param.sessionData[saveMap.sessionName] = []
+                    _.set(param.sessionData, saveMap.sessionName, [])
+                    sourceData = _.get(param.sessionData, saveMap.sessionName)
                 }
-            } else {
-                var sourceData = _.get(param.sessionData, item.sessionName)
 
-                if (item.dataType != undefined && item.dataType == "array") {
-                    if (sourceData == undefined) {
-                        //param.sessionData[item.sessionName] = []
-                        _.set(param.sessionData, item.sessionName, [])
-                        sourceData = _.get(param.sessionData, item.sessionName)
-                    }
-
-                    sourceData.push(_.cloneDeep(_.get(param, item.propertyName)))
-                } else if (item.dataType != undefined && item.dataType == "object") {
-                    if (sourceData == undefined) {
-                        _.set(param.sessionData, item.sessionName, {})
-                        sourceData = _.get(param.sessionData, item.sessionName)
-                    }
-
-                    _.set(sourceData, item.objectPropertyName, _.get(param, item.propertyName));
+                var dataRows = null
+                if (saveMap.dataPath == ".") {
+                    dataRows = param
                 } else {
-                    _.set(param.sessionData, item.sessionName, _.get(param, item.propertyName));
+                    dataRows = _.get(param, saveMap.dataPath)
                 }
-            }
-        });
-    }
-}
-
-function applyOutputMaps(param) {
-    var index = 0;
-    var message = "";
-
-    if (param.outputMaps != undefined && Array.isArray(param.outputMaps) && param.outputMaps.length > 0) {
-        //message += "\n" + JSON.stringify(param.outputMaps, null, 4)
-        //message += "\n" + JSON.stringify(param.responseBody, null, 4)
-
-        param.outputMaps.forEach(outputMap => {
-            //reset counter
-            index = 0;
-            
-            //var dataRows = _.get(param.responseBody, "channel.item")
-            var dataRows = null
-            if (outputMap.dataPath == ".") {
-                dataRows = param
-            } else {
-                dataRows = _.get(param, outputMap.dataPath)
-            }
-            //message += "\n" + JSON.stringify(dataRows, null, 4)
-
-            if (!Array.isArray(dataRows)) {
-                dataRows = [ dataRows ]
-            }
-
-            if (outputMap.sortOrder != undefined) {
-                var sortBy = outputMap.propertyName
-                var orderBy = "asc"
-
-                if (outputMap.sortOrder.sortBy != undefined) sortBy = outputMap.sortOrder.sortBy
-                if ((outputMap.sortOrder.orderBy == "asc" || outputMap.sortOrder.orderBy == "desc")) orderBy = outputMap.sortOrder.orderBy
-
-                dataRows = dataRows.sort(compareValues(sortBy, orderBy))
-            }
-
-            dataRows.filter(items => {
-                // sort the items
-                //var sortedItems = items.sort(compareValues(outputMap.propertyName));
-
-                // select the required item from return data
-                //return _.get(item, "title").startsWith(param.sessionData.searchBy);
-                if (outputMap.dataFilter != undefined) {
-                    return _.get(items, outputMap.dataFilter.dataPath).startsWith(outputMap.dataFilter.startsWith);
-                } else {
-                    return items;
+                //message += "\n" + JSON.stringify(dataRows, null, 4)
+    
+                if (!Array.isArray(dataRows)) {
+                    dataRows = [ dataRows ]
                 }
-            })
-            .forEach(item => {
-                ++index
-                // source data
-                //console.log(JSON.stringify(item.EntityReference, null, 4));
-        
-                // set the message id for debugging
-                //console.log(">>" + ++index + ". " + item.title);
-                //message += "\n>> ====" + ++index + ". " + _.get(item, "title")
-                if (outputMap.outputFormat == undefined) {
-                    //message += "\n>> " + index + ". " + _.get(item, outputMap.propertyName)
-                    message += `\n>> ${index}. ${outputMap.contentType == "json" ? JSON.stringify(_.get(item, outputMap.propertyName), null, 4) : _.get(item, outputMap.propertyName)}`
-                } else {
-                    var newValue = outputMap.outputFormat.replace(/{{propertyName}}/g, outputMap.contentType == "json" ? JSON.stringify(_.get(item, outputMap.propertyName), null, 4) : _.get(item, outputMap.propertyName))
-                    if (newValue.search(/{{index}}/g) > -1) {
-                        newValue = newValue.replace(/{{index}}/g, index)
-                    } 
-
-                    message += newValue
-                }
-            });
-        });
-
-        if (index == 0) message += `\n>> no record found.`
-    }
-
-    //helper.displaySessionData().then(message => console.log("\n" + message));
-
-    return message
-};
-
-function applyNextHopMaps(param) {
-    var index = 0;
-    var message = ""
-
-    //process nextHopMaps
-    if (param.nextHopMaps != undefined && Array.isArray(param.nextHopMaps) && param.nextHopMaps.length > 0) {
-        //message += "\n" + JSON.stringify(param.nextHopMaps, null, 4)
-
-        param.nextHopMaps
-        .forEach(nextHopMap => {
-            //reset counter
-            index = 0;
-
-            var dataRows = null
-            if (nextHopMap.dataPath == ".") {
-                dataRows = param
-            } else {
-                dataRows = _.get(param, nextHopMap.dataPath)
-            }
-            //message += "\n" + JSON.stringify(dataRows, null, 4)
-
-            if (dataRows == undefined) {
-                dataRows = [ ]
-            } else if (!Array.isArray(dataRows)) {
-                dataRows = [ dataRows ]
-            }
-
-            // get the json param template for nextHop
-            var templateSting = JSON.stringify(_.get(param, nextHopMap.paramTemplateName))
-            
-            if (nextHopMap.sortOrder != undefined) {
-                var sortBy = nextHopMap.propertyName
-                var orderBy = "asc"
-
-                if (nextHopMap.sortOrder.sortBy != undefined) sortBy = nextHopMap.sortOrder.sortBy
-                if ((nextHopMap.sortOrder.orderBy == "asc" || nextHopMap.sortOrder.orderBy == "desc")) orderBy = nextHopMap.sortOrder.orderBy
                 
-                dataRows = dataRows.sort(compareValues(sortBy, orderBy))
-            }
+                dataRows.filter(items => {
+                    if (saveMap.dataFilter != undefined) {
+                        return _.get(items, saveMap.dataFilter.dataPath).startsWith(saveMap.dataFilter.startsWith);
+                    } else {
+                        return items;
+                    }
+                })
+                .forEach(item => {
+                    var dataObject = {}
 
-            dataRows.filter(items => {
-                // select the required item from return data
-                if (nextHopMap.dataFilter != undefined) {
-                    if (nextHopMap.dataFilter.startsWith != undefined) {
-                        return _.get(items, nextHopMap.dataFilter.dataPath).startsWith(nextHopMap.dataFilter.startsWith);
-                    }
+                    saveMap.properties.forEach(propertyMap => {
+                        dataObject[propertyMap.objectPropertyName] = item[propertyMap.propertyName]
+                    })
 
-                    if (nextHopMap.dataFilter.notEqual != undefined) {
-                        return _.get(items, nextHopMap.dataFilter.dataPath) != _.get(items, nextHopMap.dataFilter.notEqual.dataPath) ? items : undefined;
-                    }
-
-                    if (nextHopMap.dataFilter.equal != undefined) {
-                        return _.get(items, nextHopMap.dataFilter.dataPath) == _.get(items, nextHopMap.dataFilter.equal.dataPath) ? items : undefined;
-                    }
-                    if (nextHopMap.dataFilter.greaterThan != undefined) {
-                        //console.log(JSON.stringify(nextHopMap.dataFilter, null, 4))
-                        //console.log(JSON.stringify(_.get(items, nextHopMap.dataFilter.dataPath), null, 4))
-                        //console.log(JSON.stringify(_.get(items, nextHopMap.dataFilter.dataPath) > nextHopMap.dataFilter.greaterThan.dataValue, null, 4))
-                        if (nextHopMap.dataFilter.greaterThan.dataPath != undefined) {
-                            return _.get(items, nextHopMap.dataFilter.dataPath) > _.get(items, nextHopMap.dataFilter.greaterThan.dataPath) ? items : undefined;
-                        } if (nextHopMap.dataFilter.greaterThan.dataValue != undefined) {
-                            return _.get(items, nextHopMap.dataFilter.dataPath) > nextHopMap.dataFilter.greaterThan.dataValue ? items : undefined;
-                        }
-                    }
+                    sourceData.push(dataObject)
+                })
+            } else if (saveMap.propertyName == undefined) {
+                if (saveMap.dataType != undefined && saveMap.dataType == "array") {
+                    _.set(param.sessionData, saveMap.sessionName, [])
+                } else if (saveMap.dataType != undefined && saveMap.dataType == "object") {
+                    _.set(param.sessionData, saveMap.sessionName, {})
+                } else if (saveMap.dataType != undefined && saveMap.dataType == "number") {
+                    _.set(param.sessionData, saveMap.sessionName, 0)
                 } else {
-                    return items;
+                    _.set(param.sessionData, saveMap.sessionName, "")
                 }
-            })
-            .forEach(item => {
-                ++index;
-                // create param from template
-                var template = JSON.parse(templateSting);
-
-                // set the message id for debugging
-                template.id = `${param.id}.${index}`;
-
-                // replace the template property with item property
-                //template.invokeUrl = template.invokeUrl.replace(/{{Key}}/g, item.Key);
-                applyNextHopReplaceMaps(nextHopMap.replaceMaps, template, item)
-
-                // add the parameters for subsequence execution...
-                param.nextHopParams.push(template);
-            })
-        
-            if (index == 0 && nextHopMap.notFoundMessage != undefined) {
-                message += nextHopMap.notFoundMessage
-            }
-        })
-    }
-
-    return message
-};
-
-function applyNextHopReplaceMaps(replaceMaps, template, dataRow) {
-    // replace property value with value from sessionData
-    if (replaceMaps != undefined) {
-        replaceMaps.forEach(item => {
-            if (typeof _.get(template, item.propertyName) == "string") {
-                var replace = "{{" + item.replaceValue + "}}";
-                var regex = new RegExp(replace, "g");
-
-                _.set(template, item.propertyName, _.get(template, item.propertyName).replace(regex, _.get(dataRow, item.replaceValue)));
             } else {
-                _.set(template, item.propertyName, _.get(dataRow, item.replaceValue));
+                var sourceData = _.get(param.sessionData, saveMap.sessionName)
+
+                if (saveMap.dataType != undefined && saveMap.dataType == "array") {
+                    if (sourceData == undefined) {
+                        //param.sessionData[saveMap.sessionName] = []
+                        _.set(param.sessionData, saveMap.sessionName, [])
+                        sourceData = _.get(param.sessionData, saveMap.sessionName)
+                    }
+
+                    sourceData.push(_.cloneDeep(_.get(param, saveMap.propertyName)))
+                } else if (saveMap.dataType != undefined && saveMap.dataType == "object") {
+                    if (sourceData == undefined) {
+                        _.set(param.sessionData, saveMap.sessionName, {})
+                        sourceData = _.get(param.sessionData, saveMap.sessionName)
+                    }
+
+                    _.set(sourceData, saveMap.objectPropertyName, _.get(param, saveMap.propertyName));
+                } else {
+                    _.set(param.sessionData, saveMap.sessionName, _.get(param, saveMap.propertyName));
+                }
             }
         });
     }
 }
+*/
