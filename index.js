@@ -529,6 +529,16 @@ util.executeTest = (param) => {
                         childMessage += indentation + message.replace(/\n/g, "\n" + indentation)
                 });
             }
+        }).then( () => {
+            // insert nextHop param based on return recordset from current api call
+            var message = mapsHelperLib.applyNextHopMaps(param)
+            if (message.trim().length > 0) childMessage += indentation + message.replace(/\n/g, "\n" + indentation)
+    
+            // handle auto display using outputMaps
+            var postMessage = mapsHelperLib.applyOutputMaps(param)
+            if (postMessage.trim().length > 0) {
+                childMessage += indentation + postMessage.replace(/\n/g, "\n" + indentation)
+            }
         }).catch(function(error) { 
             //console.log(error.stack);
 
@@ -538,16 +548,16 @@ util.executeTest = (param) => {
                 param.testPassed = true;
             }
         }).finally( () => { return resolve() });
-    }).then( () => {
-        // insert nextHop param based on return recordset from current api call
-        var message = mapsHelperLib.applyNextHopMaps(param)
-        if (message.trim().length > 0) childMessage += indentation + message.replace(/\n/g, "\n" + indentation)
+    // }).then( () => {
+    //     // insert nextHop param based on return recordset from current api call
+    //     var message = mapsHelperLib.applyNextHopMaps(param)
+    //     if (message.trim().length > 0) childMessage += indentation + message.replace(/\n/g, "\n" + indentation)
 
-        // handle auto display using outputMaps
-        var postMessage = mapsHelperLib.applyOutputMaps(param)
-        if (postMessage.trim().length > 0) {
-            childMessage += indentation + postMessage.replace(/\n/g, "\n" + indentation)
-        }
+    //     // handle auto display using outputMaps
+    //     var postMessage = mapsHelperLib.applyOutputMaps(param)
+    //     if (postMessage.trim().length > 0) {
+    //         childMessage += indentation + postMessage.replace(/\n/g, "\n" + indentation)
+    //     }
     }).then( () => { 
         if (param.nextHopParams != undefined && param.nextHopParams.length > 0) {
             return util.performTestInternal(param.nextHopParams).then( message => {
@@ -860,82 +870,3 @@ for (var i = 0; i < funcNames.length; i++) {
 module.exports = {
     apiHelper : util
 };
-
-
-/*
-  function applySaveMaps(param) {
-    if (param.saveMaps != undefined && Array.isArray(param.saveMaps)) {
-        param.saveMaps.forEach(saveMap => {
-            //console.log(JSON.stringify(saveMap, null, 4))
-            if (saveMap.dataPath != undefined) {
-                var sourceData = _.get(param.sessionData, saveMap.sessionName)
-                if (sourceData == undefined) {
-                    //param.sessionData[saveMap.sessionName] = []
-                    _.set(param.sessionData, saveMap.sessionName, [])
-                    sourceData = _.get(param.sessionData, saveMap.sessionName)
-                }
-
-                var dataRows = null
-                if (saveMap.dataPath == ".") {
-                    dataRows = param
-                } else {
-                    dataRows = _.get(param, saveMap.dataPath)
-                }
-                //message += "\n" + JSON.stringify(dataRows, null, 4)
-    
-                if (!Array.isArray(dataRows)) {
-                    dataRows = [ dataRows ]
-                }
-                
-                dataRows.filter(items => {
-                    if (saveMap.dataFilter != undefined) {
-                        return _.get(items, saveMap.dataFilter.dataPath).startsWith(saveMap.dataFilter.startsWith);
-                    } else {
-                        return items;
-                    }
-                })
-                .forEach(item => {
-                    var dataObject = {}
-
-                    saveMap.properties.forEach(propertyMap => {
-                        dataObject[propertyMap.objectPropertyName] = item[propertyMap.propertyName]
-                    })
-
-                    sourceData.push(dataObject)
-                })
-            } else if (saveMap.propertyName == undefined) {
-                if (saveMap.dataType != undefined && saveMap.dataType == "array") {
-                    _.set(param.sessionData, saveMap.sessionName, [])
-                } else if (saveMap.dataType != undefined && saveMap.dataType == "object") {
-                    _.set(param.sessionData, saveMap.sessionName, {})
-                } else if (saveMap.dataType != undefined && saveMap.dataType == "number") {
-                    _.set(param.sessionData, saveMap.sessionName, 0)
-                } else {
-                    _.set(param.sessionData, saveMap.sessionName, "")
-                }
-            } else {
-                var sourceData = _.get(param.sessionData, saveMap.sessionName)
-
-                if (saveMap.dataType != undefined && saveMap.dataType == "array") {
-                    if (sourceData == undefined) {
-                        //param.sessionData[saveMap.sessionName] = []
-                        _.set(param.sessionData, saveMap.sessionName, [])
-                        sourceData = _.get(param.sessionData, saveMap.sessionName)
-                    }
-
-                    sourceData.push(_.cloneDeep(_.get(param, saveMap.propertyName)))
-                } else if (saveMap.dataType != undefined && saveMap.dataType == "object") {
-                    if (sourceData == undefined) {
-                        _.set(param.sessionData, saveMap.sessionName, {})
-                        sourceData = _.get(param.sessionData, saveMap.sessionName)
-                    }
-
-                    _.set(sourceData, saveMap.objectPropertyName, _.get(param, saveMap.propertyName));
-                } else {
-                    _.set(param.sessionData, saveMap.sessionName, _.get(param, saveMap.propertyName));
-                }
-            }
-        });
-    }
-}
-*/
