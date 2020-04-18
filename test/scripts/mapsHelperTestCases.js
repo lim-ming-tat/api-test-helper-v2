@@ -3,7 +3,7 @@
 const _ = require("lodash");
 
 const mapsHelperLib = require('../../lib/mapsHelperLib');
-let { PropertyUndefinedError } = require('../../lib/errors');
+let { PropertyUndefinedError, DataPathUndefinedError } = require('../../lib/errors');
 
 let params = require('../resources/saveMapsTestData.json')
 
@@ -32,6 +32,8 @@ let expectedResult_hdb_p1 = {
     "agencyName": "HDB Project 1",
     "businessKey": "a8a8da4e-1a81-4870-b51a-836237aebaa0.awslab"
 }
+
+
 
 describe('dataFilter tests', function () {
 
@@ -361,32 +363,195 @@ describe('dataFilter tests', function () {
     });
 });
 
-// when saveMap.propertyName == undefined
-describe('saveMaps Tests - undefined sessionData variable initialize to correct data type', function () {
-    it('saveMaps - access param object and map to object', function () {
-        var param = _.cloneDeep(params.param3)
 
-        expect(mapsHelperLib.applySaveMaps.bind(mapsHelperLib.applySaveMaps, param))
-            .to.not.throw()
+
+
+
+
+// // when saveMap.propertyName == undefined
+// describe('saveMaps Tests - undefined sessionData variable initialize to correct data type', function () {
+//     it('saveMaps - access param object and map to object', function () {
+//         var param = _.cloneDeep(params.param3)
+
+//         expect(mapsHelperLib.applySaveMaps.bind(mapsHelperLib.applySaveMaps, param))
+//             .to.not.throw()
+//         // console.log(JSON.stringify(param.sessionData, null, 4))
+
+//         let usersFound = 1
+//         expect(param.sessionData.users)
+//             .to.be.an('array')
+//             .to.have.lengthOf(usersFound)
+
+//         // agencyName and businessKey must match
+//         expect(param.sessionData.users[0])
+//             .to.be.an('object')
+//             .that.has.all.keys('userName', 'userFdn')
+//             .to.include({
+//                 "userName": "adminawslab",
+//                 "userFdn": "7d146b36-bf94-402a-a2bc-31a708a21089.awslab"
+//             })
+//     });
+
+//     it('saveMaps - variable Initialization', function () {
+//         var param = _.cloneDeep(params.param2)
+        
+//         mapsHelperLib.applySaveMaps(param)
+//         // console.log(JSON.stringify(param.sessionData, null, 4))
+
+//         expect(param.sessionData.initArray)
+//             .to.be.an('array')
+//             .that.is.empty
+
+//         expect(param.sessionData.initObject)
+//             .to.be.an('object')
+//             .that.is.empty
+
+//         expect(param.sessionData.initNumber)
+//             .to.be.an('number')
+//             .to.equal(0)
+
+//         expect(param.sessionData.initString1)
+//             .to.be.an('string')
+//             .that.is.empty
+
+//         expect(param.sessionData.initString2)
+//             .to.be.an('string')
+//             .that.is.empty
+//     });
+// });
+
+// describe('saveMaps Tests - save as object from an array', function () {
+//     var param = _.cloneDeep(params.param1)
+
+//     mapsHelperLib.applySaveMaps(param)
+//     // console.log(JSON.stringify(param.sessionData, null, 4))
+    
+//     it('saveMaps - save as object in correct format', function () {
+//         expect(param.sessionData.deploymentZones[0])
+//             .to.be.an('object')
+//             .to.include({
+//                 "deploymentZoneID": "8a761839-cca2-4269-aef4-cf9fd328777d.awslab",
+//                 "name": "AWS CPF LAB Gateway",
+//                 "containerCount": 2,
+//                 "containerAssigned": 2
+//             })
+//     });
+
+//     it('saveMaps - return 3 records', function () {
+//         let usersFound = 3
+//         expect(param.sessionData.deploymentZones)
+//             .to.be.an('array')
+//             .to.have.lengthOf(3)
+//     });
+// });
+
+
+
+
+describe('saveMaps Tests', function () {
+    var param1 = {
+        "name" : "Mandarin Oriental",
+
+        "responseBody": {
+            "markers": [
+                {
+                    "name": "Rixos The Palm Dubai",
+                    "location": [25.1212, 55.1535],
+                },
+                {
+                    "name": "Shangri-La Hotel",
+                    "location": [25.2084, 55.2719]
+                },
+                {
+                    "name": "Grand Hyatt",
+                    "location": [25.2285, 55.3273]
+                }
+            ]
+        },
+
+        "sessionData" : {},
+
+        "saveMaps": []
+    }
+
+    it('saveMaps - save markers object in hotels array', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "hotels",
+                "dataPath": "responseBody.markers"
+            }
+        )
+        
+        mapsHelperLib.applySaveMaps(param)
         // console.log(JSON.stringify(param.sessionData, null, 4))
 
-        let usersFound = 1
-        expect(param.sessionData.users)
+        expect(param.sessionData.hotels)
             .to.be.an('array')
-            .to.have.lengthOf(usersFound)
+            .to.have.lengthOf(3)
 
-        // agencyName and businessKey must match
-        expect(param.sessionData.users[0])
+        expect(param.sessionData.hotels[0])
             .to.be.an('object')
-            .that.has.all.keys('userName', 'userFdn')
-            .to.include({
-                "userName": "adminawslab",
-                "userFdn": "7d146b36-bf94-402a-a2bc-31a708a21089.awslab"
+            .to.deep.include(
+            {
+                "name": "Rixos The Palm Dubai",
+                "location": [
+                    25.1212,
+                    55.1535
+                ]
             })
     });
 
-    it('saveMaps - variable Initialization', function () {
-        var param = _.cloneDeep(params.param2)
+    it('saveMaps - save markers into new object by specifying properties to transfer', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "hotels",
+                "dataPath": "responseBody.markers",
+                "properties": [
+                    {
+                        "propertyName": "name",
+                        "objectPropertyName": "name"
+                    },
+                    {
+                        "propertyName": "location",
+                        "objectPropertyName": "position"
+                    }
+                ]
+            }
+        )
+        
+        mapsHelperLib.applySaveMaps(param)
+        // console.log(JSON.stringify(param.sessionData, null, 4))
+
+        expect(param.sessionData.hotels)
+            .to.be.an('array')
+            .to.have.lengthOf(3)
+
+        expect(param.sessionData.hotels[0])
+            .to.be.an('object')
+            .to.deep.include(
+            {
+                "name": "Rixos The Palm Dubai",
+                "position": [
+                    25.1212,
+                    55.1535
+                ]
+            })
+    });
+
+
+    it('saveMaps - initialize variable - array', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "initArray",
+                "dataType": "array"
+            }
+        )
         
         mapsHelperLib.applySaveMaps(param)
         // console.log(JSON.stringify(param.sessionData, null, 4))
@@ -394,56 +559,765 @@ describe('saveMaps Tests - undefined sessionData variable initialize to correct 
         expect(param.sessionData.initArray)
             .to.be.an('array')
             .that.is.empty
+    });
+
+    it('saveMaps - initialize variable - object', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "initObject",
+                "dataType": "object"
+            }
+        )
+        
+        mapsHelperLib.applySaveMaps(param)
+        // console.log(JSON.stringify(param.sessionData, null, 4))
 
         expect(param.sessionData.initObject)
             .to.be.an('object')
             .that.is.empty
+    });
+
+    it('saveMaps - initialize variable - number', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "initNumber",
+                "dataType": "number"
+            }
+        )
+        
+        mapsHelperLib.applySaveMaps(param)
+        // console.log(JSON.stringify(param.sessionData, null, 4))
 
         expect(param.sessionData.initNumber)
             .to.be.an('number')
             .to.equal(0)
+    });
+
+    it('saveMaps - initialize variable - string with invalid dataType', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "initString1",
+                "dataType": "randomStringOrNothing"
+            }
+        )
+        
+        mapsHelperLib.applySaveMaps(param)
+        // console.log(JSON.stringify(param.sessionData, null, 4))
 
         expect(param.sessionData.initString1)
             .to.be.an('string')
             .that.is.empty
+    });
+
+    it('saveMaps - initialize variable - string without dataType', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "initString2"
+            }
+        )
+        
+        mapsHelperLib.applySaveMaps(param)
+        // console.log(JSON.stringify(param.sessionData, null, 4))
 
         expect(param.sessionData.initString2)
             .to.be.an('string')
             .that.is.empty
     });
-});
 
-describe('saveMaps Tests - save as object from an array', function () {
-    var param = _.cloneDeep(params.param1)
 
-    mapsHelperLib.applySaveMaps(param)
-    // console.log(JSON.stringify(param.sessionData, null, 4))
-    
-    it('saveMaps - save as object in correct format', function () {
-        expect(param.sessionData.deploymentZones[0])
-            .to.be.an('object')
-            .to.include({
-                "deploymentZoneID": "8a761839-cca2-4269-aef4-cf9fd328777d.awslab",
-                "name": "AWS CPF LAB Gateway",
-                "containerCount": 2,
-                "containerAssigned": 2
-            })
-    });
+    it('saveMaps - save selected object from source to sessionData as array', function () {
+        var param = _.cloneDeep(param1)
 
-    it('saveMaps - return 3 records', function () {
-        let usersFound = 3
-        expect(param.sessionData.deploymentZones)
+        param.saveMaps.push(
+            {
+                "sessionName": "selectedObject",
+                "dataType" : "array",
+                "propertyName" : "responseBody.markers[0]"
+            }
+        )
+        
+        mapsHelperLib.applySaveMaps(param)
+        // console.log(JSON.stringify(param.sessionData, null, 4))
+
+        expect(param.sessionData.selectedObject)
             .to.be.an('array')
-            .to.have.lengthOf(3)
+            .to.be.lengthOf(1)
+            .that.deep.include(
+                {
+                    "name": "Rixos The Palm Dubai",
+                    "location": [
+                        25.1212,
+                        55.1535
+                    ]
+                }
+            )
+    });
+
+    it('saveMaps - error when save selected object from source to sessionData as object without property name', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "selectedObject",
+                "dataType" : "object",
+                "propertyName" : "responseBody.markers[0]"
+            }
+        )
+        
+        expect(mapsHelperLib.applySaveMaps.bind(mapsHelperLib.applySaveMaps, param))
+            .to.throw(PropertyUndefinedError)
+            .with.property('propertyName', 'objectPropertyName')
+    });
+
+    it('saveMaps - save selected object from source to sessionData as object with property name', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "selectedObject",
+                "dataType" : "object",
+                "objectPropertyName" : "firstMarker",
+                "propertyName" : "responseBody.markers[0]"
+            }
+        )
+        
+        mapsHelperLib.applySaveMaps(param)
+        // console.log(JSON.stringify(param.sessionData, null, 4))
+
+        expect(param.sessionData.selectedObject)
+            .to.be.an('object')
+            .that.deep.include(
+                {
+                    "firstMarker": {
+                        "name": "Rixos The Palm Dubai",
+                        "location": [
+                            25.1212,
+                            55.1535
+                        ]
+                    }
+                }
+            )
+    });
+
+    it('saveMaps - save selected object from source to sessionData', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "selectedObject",
+                "propertyName" : "responseBody.markers[0]"
+            }
+        )
+        
+        mapsHelperLib.applySaveMaps(param)
+        // console.log(JSON.stringify(param.sessionData, null, 4))
+
+        expect(param.sessionData)
+            .to.be.an('object')
+            .that.deep.include(
+                {
+                    "selectedObject": {
+                        "name": "Rixos The Palm Dubai",
+                        "location": [
+                            25.1212,
+                            55.1535
+                        ]
+                    }
+                }
+            )
+    });
+
+    it('saveMaps - dataPath with . (root object)', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "selectedObject",
+                "dataValue" : "Constant Value"
+            }
+        )
+        
+        mapsHelperLib.applySaveMaps(param)
+        // console.log(JSON.stringify(param.sessionData, null, 4))
+
+        expect(param.sessionData.selectedObject)
+            .to.be.an('string')
+            .to.be.equal('Constant Value')
+    });
+
+
+    it('saveMaps - acess the param ob', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "selectedObject",
+                "dataPath" : ".",
+                "propertyName" : "name"
+            }
+        )
+        
+        mapsHelperLib.applySaveMaps(param)
+        console.log(JSON.stringify(param.sessionData, null, 4))
+
+        expect(param.sessionData.selectedObject)
+            .to.be.an('array')
     });
 });
+
+
+
+
+
+
+
+
 
 
 
 describe('outputMaps tests', function () {
-    it('saveMaps - access param object and map to object', function () {
-        var param = _.cloneDeep(params.param_dataFilter.param)
+    var param1 = {
+        "stringValue" : "Helloworld!!!",
+        "numberValue" : 1234567890,
+
+        "arrayValue" : [
+            { "data" : "value1"},
+            { "data" : "value2"}
+        ],
+
+        "sessionData" : {
+            "stringValue" : "sessionData.Helloworld!!!"
+        },
+
+        "outputMaps": []
+    }
+
+    var param2 = {
+        "responseBody": {
+            "markers": [
+                {
+                    "name": "Rixos The Palm Dubai",
+                    "location": [25.1212, 55.1535],
+                },
+                {
+                    "name": "Shangri-La Hotel",
+                    "location": [25.2084, 55.2719]
+                },
+                {
+                    "name": "Grand Hyatt",
+                    "location": [25.2285, 55.3273]
+                }
+            ]
+        },
+
+        "outputMaps": []
+    }
+
+    it('outputMap - display a string value from param object in default output format', function () {
+        var param = _.cloneDeep(param1)
+
+        param.outputMaps.push(
+            {
+                "dataPath": "sessionData",
+                "propertyName": "stringValue"
+            }
+        )
 
         var output = mapsHelperLib.applyOutputMaps(param)
+        // console.log(output)
+
+        expect(output)
+            .to.be.an('string')
+            .that.equal("\n>> 1. sessionData.Helloworld!!!")
+    });
+
+    it('outputMap - display a string value from param object in custom output format', function () {
+        var param = _.cloneDeep(param1)
+
+        param.outputMaps.push(
+            {
+                "dataPath": ".",
+                "propertyName": "stringValue",
+                "outputFormat": "{{propertyName}}"
+            }
+        )
+
+        var output = mapsHelperLib.applyOutputMaps(param)
+        // console.log(output)
+
+        expect(output)
+            .to.be.an('string')
+            .that.equal("Helloworld!!!")
+    });
+
+    it('outputMap - display a string value from param object in custom output format with index', function () {
+        var param = _.cloneDeep(param1)
+
+        param.outputMaps.push(
+            {
+                "dataPath": ".",
+                "propertyName": "stringValue",
+                "outputFormat": "{{index}}. {{propertyName}}"
+            }
+        )
+
+        var output = mapsHelperLib.applyOutputMaps(param)
+        // console.log(output)
+
+        expect(output)
+            .to.be.an('string')
+            .that.equal("1. Helloworld!!!")
+    });
+
+    it('outputMap - display object(sessionData) as json for object data type', function () {
+        var param = _.cloneDeep(param1)
+
+        param.outputMaps.push(
+            {
+                "dataPath": "sessionData",
+                "propertyName": ".",
+                "outputFormat": "{{propertyName}}"
+            }
+        )
+
+        var output = mapsHelperLib.applyOutputMaps(param)
+        // console.log(output)
+
+        expect(output)
+            .to.be.an('string')
+            .that.equal("{\n    \"stringValue\": \"sessionData.Helloworld!!!\"\n}")
+    });
+
+    it('outputMap - display array(arrayValue) as json for array data type', function () {
+        var param = _.cloneDeep(param1)
+
+        param.outputMaps.push(
+            {
+                "dataPath": "arrayValue",
+                "propertyName": ".",
+                "outputFormat": "{{propertyName}}"
+            }
+        )
+
+        var output = mapsHelperLib.applyOutputMaps(param)
+        // console.log(output)
+
+        expect(output)
+            .to.be.an('string')
+            .that.equal("{\n    \"data\": \"value1\"\n}{\n    \"data\": \"value2\"\n}")
+    });
+
+    it('outputMap - display number(numberValue) as json for number data type', function () {
+        var param = _.cloneDeep(param1)
+
+        param.outputMaps.push(
+            {
+                "dataPath": "numberValue",
+                "propertyName": ".",
+                "outputFormat": "{{propertyName}}"
+            }
+        )
+
+        var output = mapsHelperLib.applyOutputMaps(param)
+        // console.log(output)
+
+        expect(output)
+            .to.be.an('string')
+            .that.equal("1234567890")
+    });
+
+    it('outputMap - skip output map', function () {
+        var param = _.cloneDeep(param1)
+
+        param.outputMaps.push(
+            {
+                "skip" : true,
+                "dataPath": "sessionData",
+                "propertyName": ".",
+                "outputFormat": "{{propertyName}}"
+            }
+        )
+
+        var output = mapsHelperLib.applyOutputMaps(param)
+        // console.log(output)
+
+        expect(output)
+            .to.be.an('string')
+            .that.equal("")
+    });
+
+    it('outputMap - invalid dataPath', function () {
+        var param = _.cloneDeep(param1)
+
+        param.outputMaps.push(
+            {
+                "dataPath": "invalid",
+                "propertyName": "stringValue",
+                "outputFormat": "{{propertyName}}"
+            }
+        )
+
+        expect(mapsHelperLib.applyOutputMaps.bind(mapsHelperLib.applyOutputMaps, param))
+            .to.throw(DataPathUndefinedError)
+            .with.property('dataPath', 'invalid')
+    });
+
+    it('outputMap - invalid propertyName', function () {
+        var param = _.cloneDeep(param1)
+
+        param.outputMaps.push(
+            {
+                "dataPath": ".",
+                "propertyName": "invalid",
+                "outputFormat": "{{propertyName}}"
+            }
+        )
+
+        expect(mapsHelperLib.applyOutputMaps.bind(mapsHelperLib.applyOutputMaps, param))
+            .to.throw(PropertyUndefinedError)
+            .with.property('propertyName', 'invalid')
+    });
+
+    it('outputMap - display array of objects', function () {
+        var param = _.cloneDeep(param2)
+
+        param.outputMaps.push(
+            {
+                "dataPath": "responseBody.markers",
+                "propertyName": "."
+            }
+        )
+
+        var output = mapsHelperLib.applyOutputMaps(param)
+        // console.log(output)
+
+        expect(output)
+            .to.be.an('string')
+            .that.equal('\n>> 1. {\n    "name": "Rixos The Palm Dubai",\n    "location": [\n        25.1212,\n        55.1535\n    ]\n}\n>> 2. {\n    "name": "Shangri-La Hotel",\n    "location": [\n        25.2084,\n        55.2719\n    ]\n}\n>> 3. {\n    "name": "Grand Hyatt",\n    "location": [\n        25.2285,\n        55.3273\n    ]\n}')
+    });
+
+    it('sortBy - invalid sortBy property name', function () {
+        var param = _.cloneDeep(param2)
+
+        param.outputMaps.push(
+            {
+                "dataPath": "responseBody.markers",
+                "propertyName": ".",
+                "sortOrder" : {
+                    "sortBy": "invalidSortBy"
+                }
+            }
+        )
+
+        //var output = mapsHelperLib.applyOutputMaps(param)
+        // console.log(output)
+        expect(mapsHelperLib.applyOutputMaps.bind(mapsHelperLib.applyOutputMaps, param))
+            .to.throw(PropertyUndefinedError)
+            .with.property('propertyName', 'invalidSortBy')
+
+        // expect(output)
+        //     .to.be.an('string')
+        //     .that.equal('\n>> 1. {\n    "name": "Grand Hyatt",\n    "location": [\n        25.2285,\n        55.3273\n    ]\n}\n>> 2. {\n    "name": "Rixos The Palm Dubai",\n    "position": [\n        25.1212,\n        55.1535\n    ]\n}\n>> 3. {\n    "name": "Shangri-La Hotel",\n    "location": [\n        25.2084,\n        55.2719\n    ]\n}')
+    });
+
+    it('sortBy - display object by sorted name asc', function () {
+        var param = _.cloneDeep(param2)
+
+        param.outputMaps.push(
+            {
+                "dataPath": "responseBody.markers",
+                "propertyName": ".",
+                "sortOrder" : {
+                    "sortBy": "name"
+                }
+            }
+        )
+
+        var output = mapsHelperLib.applyOutputMaps(param)
+        // console.log(output)
+
+        expect(output)
+            .to.be.an('string')
+            .that.equal('\n>> 1. {\n    "name": "Grand Hyatt",\n    "location": [\n        25.2285,\n        55.3273\n    ]\n}\n>> 2. {\n    "name": "Rixos The Palm Dubai",\n    "location": [\n        25.1212,\n        55.1535\n    ]\n}\n>> 3. {\n    "name": "Shangri-La Hotel",\n    "location": [\n        25.2084,\n        55.2719\n    ]\n}')
+    });
+
+    it('sortBy - display object by sorted name desc', function () {
+        var param = _.cloneDeep(param2)
+
+        param.outputMaps.push(
+            {
+                "dataPath": "responseBody.markers",
+                "propertyName": ".",
+                "sortOrder" : {
+                    "sortBy": "name",
+                    "orderBy" : "desc"
+                }
+            }
+        )
+
+        var output = mapsHelperLib.applyOutputMaps(param)
+        // console.log(output)
+
+        expect(output)
+            .to.be.an('string')
+            .that.equal('\n>> 1. {\n    "name": "Shangri-La Hotel",\n    "location": [\n        25.2084,\n        55.2719\n    ]\n}\n>> 2. {\n    "name": "Rixos The Palm Dubai",\n    "location": [\n        25.1212,\n        55.1535\n    ]\n}\n>> 3. {\n    "name": "Grand Hyatt",\n    "location": [\n        25.2285,\n        55.3273\n    ]\n}')
+    });
+
+    it('outputMap - display array of name', function () {
+        var param = _.cloneDeep(param2)
+
+        param.outputMaps.push(
+            {
+                "dataPath": "responseBody.markers",
+                "propertyName": "name"
+            }
+        )
+
+        var output = mapsHelperLib.applyOutputMaps(param)
+        // console.log(output)
+
+        expect(output)
+            .to.be.an('string')
+            .that.equal("\n>> 1. Rixos The Palm Dubai\n>> 2. Shangri-La Hotel\n>> 3. Grand Hyatt")
+    });
+
+    it('sortBy - display array by sorted name asc', function () {
+        var param = _.cloneDeep(param2)
+
+        param.outputMaps.push(
+            {
+                "dataPath": "responseBody.markers",
+                "propertyName": "name",
+                "sortOrder" : {
+
+                }
+            }
+        )
+
+        var output = mapsHelperLib.applyOutputMaps(param)
+        // console.log(output)
+
+        expect(output)
+            .to.be.an('string')
+            .that.equal("\n>> 1. Grand Hyatt\n>> 2. Rixos The Palm Dubai\n>> 3. Shangri-La Hotel")
+    });
+
+    it('sortBy - display array by sorted name desc', function () {
+        var param = _.cloneDeep(param2)
+
+        param.outputMaps.push(
+            {
+                "dataPath": "responseBody.markers",
+                "propertyName": "name",
+                "sortOrder" : {
+                    "orderBy" : "desc"
+                }
+            }
+        )
+
+        var output = mapsHelperLib.applyOutputMaps(param)
+        // console.log(output)
+
+        expect(output)
+            .to.be.an('string')
+            .that.equal("\n>> 1. Shangri-La Hotel\n>> 2. Rixos The Palm Dubai\n>> 3. Grand Hyatt")
+    });
+});
+
+describe('nextHopMap Tests', function () {
+    var param1 = {
+        "name" : "Mandarin Oriental",
+
+        "responseBody": {
+            "markers": [
+                {
+                    "name": "Rixos The Palm Dubai",
+                    "location": [25.1212, 55.1535],
+                },
+                {
+                    "name": "Shangri-La Hotel",
+                    "location": [25.2084, 55.2719]
+                },
+                {
+                    "name": "Grand Hyatt",
+                    "location": [25.2285, 55.3273]
+                }
+            ]
+        },
+        "noResults" : [],
+
+        "nextHopParams_desc" : "nextHopParams will be defaulted to empty array when not defined",
+
+        "paramTemplate" : {
+            "id" : "",
+            "description" :  "Hotel - {{name}}",
+            "position" : null
+        },
+
+        "nextHopMaps": []
+    }
+    
+    it('nextHopMap - invalid paramTemplateName', function () {
+        var param = _.cloneDeep(param1)
+
+        param.nextHopMaps.push(
+            {
+                "paramTemplateName" : "invalidParamTemplate",
+                "dataPath" : "responseBody.markers",
+                "notFoundMessage" : "\n>> No markers found.",
+                "replaceMaps" : [
+                    {
+                        "propertyName" : "description",
+                        "replaceValue" : "name"
+                    }
+                ]    
+            }
+        )
+
+        // var output = mapsHelperLib.applyNextHopMaps(param)
+        expect(mapsHelperLib.applyNextHopMaps.bind(mapsHelperLib.applyNextHopMaps, param))
+            .to.throw(PropertyUndefinedError)
+            .with.property('propertyName', 'invalidParamTemplate')
+    });
+
+    it('nextHopMap - invalid dataPath', function () {
+        var param = _.cloneDeep(param1)
+
+        param.nextHopMaps.push(
+            {
+                "paramTemplateName" : "paramTemplate",
+                "dataPath" : "responseBody.invalid",
+                "notFoundMessage" : "\n>> No markers found.",
+                "replaceMaps" : [
+                    {
+                        "propertyName" : "description",
+                        "replaceValue" : "name"
+                    }
+                ]    
+            }
+        )
+
+        // var output = mapsHelperLib.applyNextHopMaps(param)
+        expect(mapsHelperLib.applyNextHopMaps.bind(mapsHelperLib.applyNextHopMaps, param))
+            .to.throw(DataPathUndefinedError)
+            .with.property('propertyName', 'responseBody.invalid')
+    });
+
+    it('nextHopMap - return nextHopParams as array based on input recordset', function () {
+        var param = _.cloneDeep(param1)
+
+        param.nextHopMaps.push(
+            {
+                "paramTemplateName" : "paramTemplate",
+                "dataPath" : "responseBody.markers",
+                "notFoundMessage" : "\n>> No markers found.",
+                "replaceMaps" : [
+                    {
+                        "propertyName" : "description",
+                        "replaceValue" : "name"
+                    },
+                    {
+                        "propertyName" : "position",
+                        "replaceValue" : "location"
+                    }
+                ]    
+            }
+        )
+
+        expect(mapsHelperLib.applyNextHopMaps(param))
+            .to.be.an('string')
+            .that.is.empty
+
+        // console.log(JSON.stringify(param.nextHopParams, null, 4))
+        expect(param.nextHopParams)
+            .to.be.an('array')
+            .to.have.lengthOf(3)
+    });
+
+    it('nextHopMap - return nextHopParams empty array with notFoundMessage message', function () {
+        var param = _.cloneDeep(param1)
+
+        param.nextHopMaps.push(
+            {
+                "paramTemplateName" : "paramTemplate",
+                "dataPath" : "noResults",
+                "notFoundMessage" : "No results found.",
+                "replaceMaps" : [
+                    {
+                        "propertyName" : "description",
+                        "replaceValue" : "name"
+                    }
+                ]    
+            }
+        )
+
+        // var output = mapsHelperLib.applyNextHopMaps(param)
+        expect(mapsHelperLib.applyNextHopMaps(param))
+            .to.be.an('string')
+            .that.is.equal('No results found.')
+
+        expect(param.nextHopParams)
+            .to.be.an('array')
+            .to.have.lengthOf(0)
+    });
+
+    it('nextHopMap - return nextHopParams empty array without message', function () {
+        var param = _.cloneDeep(param1)
+
+        param.nextHopMaps.push(
+            {
+                "paramTemplateName" : "paramTemplate",
+                "dataPath" : "noResults",
+                "replaceMaps" : [
+                    {
+                        "propertyName" : "description",
+                        "replaceValue" : "name"
+                    }
+                ]    
+            }
+        )
+
+        // var output = mapsHelperLib.applyNextHopMaps(param)
+        expect(mapsHelperLib.applyNextHopMaps(param))
+            .to.be.an('string')
+            .that.is.empty
+
+        expect(param.nextHopParams)
+            .to.be.an('array')
+            .to.have.lengthOf(0)
+    });
+
+    it('nextHopMap - process object (non-array)', function () {
+        var param = _.cloneDeep(param1)
+
+        param.nextHopMaps.push(
+            {
+                "paramTemplateName" : "paramTemplate",
+                "dataPath" : ".",
+                "replaceMaps" : [
+                    {
+                        "propertyName" : "description",
+                        "replaceValue" : "name"
+                    }
+                ]    
+            }
+        )
+
+        expect(mapsHelperLib.applyNextHopMaps(param))
+            .to.be.an('string')
+            .that.is.empty
+
+        // console.log(JSON.stringify(param.nextHopParams, null, 4))
+        expect(param.nextHopParams)
+            .to.be.an('array')
+            .to.have.lengthOf(1)
     });
 });

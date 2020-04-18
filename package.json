@@ -23,12 +23,12 @@
   "homepage": "https://github.com/lim-ming-tat/api-test-helper-v2#readme",
   "dependencies": {
     "bluebird": "^3.7.2",
-    "isvalid": "^2.7.10",
+    "isvalid": "^2.7.12",
     "lodash": "^4.17.15",
-    "luxon": "^1.21.3",
+    "luxon": "^1.23.0",
     "node-apex-api-security": "github:GovTechSG/node-apex-api-security",
-    "node-jose": "^1.1.3",
-    "superagent": "^5.1.2"
+    "node-jose": "^1.1.4",
+    "superagent": "^5.2.2"
   },
   "devDependencies": {
     "chai": "^4.2.0",
