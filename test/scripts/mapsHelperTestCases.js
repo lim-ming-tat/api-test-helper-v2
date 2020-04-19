@@ -411,11 +411,11 @@ describe('dataFilter tests', function () {
 //             .to.equal(0)
 
 //         expect(param.sessionData.initString1)
-//             .to.be.an('string')
+//             .to.be.a('string')
 //             .that.is.empty
 
 //         expect(param.sessionData.initString2)
-//             .to.be.an('string')
+//             .to.be.a('string')
 //             .that.is.empty
 //     });
 // });
@@ -611,7 +611,7 @@ describe('saveMaps Tests', function () {
         // console.log(JSON.stringify(param.sessionData, null, 4))
 
         expect(param.sessionData.initString1)
-            .to.be.an('string')
+            .to.be.a('string')
             .that.is.empty
     });
 
@@ -628,7 +628,7 @@ describe('saveMaps Tests', function () {
         // console.log(JSON.stringify(param.sessionData, null, 4))
 
         expect(param.sessionData.initString2)
-            .to.be.an('string')
+            .to.be.a('string')
             .that.is.empty
     });
 
@@ -749,12 +749,12 @@ describe('saveMaps Tests', function () {
         // console.log(JSON.stringify(param.sessionData, null, 4))
 
         expect(param.sessionData.selectedObject)
-            .to.be.an('string')
+            .to.be.a('string')
             .to.be.equal('Constant Value')
     });
 
 
-    it('saveMaps - acess the param ob', function () {
+    it('saveMaps - acess the param object', function () {
         var param = _.cloneDeep(param1)
 
         param.saveMaps.push(
@@ -766,10 +766,77 @@ describe('saveMaps Tests', function () {
         )
         
         mapsHelperLib.applySaveMaps(param)
-        console.log(JSON.stringify(param.sessionData, null, 4))
+        // console.log(JSON.stringify(param.sessionData, null, 4))
 
         expect(param.sessionData.selectedObject)
             .to.be.an('array')
+    });
+
+    it('saveMaps - without saveMaps and skip saveMap', function () {
+        var param = _.cloneDeep(param1)
+
+        // skip saveMaps 
+        param.saveMaps = undefined
+        mapsHelperLib.applySaveMaps(param)
+
+        // skip one saveMap
+        param.saveMaps = []
+        param.saveMaps.push(
+            {
+                "skip" : true,
+                "sessionName": "initString",
+                "propertyName" : "name"
+            }
+        )
+        
+        mapsHelperLib.applySaveMaps(param)
+        // console.log(JSON.stringify(param.sessionData, null, 4))
+
+        expect(param.sessionData.initString)
+            .to.be.an('undefined')
+    });
+
+    it('saveMaps - increase coverage - sessionData already declare as string', function () {
+        var param = _.cloneDeep(param1)
+
+        // sessionData.initString is not null
+        param.sessionData.initString = ""
+
+        param.saveMaps.push(
+            {
+                "sessionName": "initString",
+                "propertyName" : "name"
+            }
+        )
+        
+        mapsHelperLib.applySaveMaps(param)
+        // console.log(JSON.stringify(param.sessionData, null, 4))
+
+        expect(param.sessionData.initString)
+            .to.be.a('string')
+            .that.is.equal('Mandarin Oriental')
+    });
+
+    it('saveMaps - increase coverage - sessionData already declare as array', function () {
+        var param = _.cloneDeep(param1)
+
+        // set default empty array
+        param.sessionData.arrayList = []
+
+        param.saveMaps.push(
+            {
+                "sessionName": "arrayList",
+                "dataPath" : "responseBody.markers",
+                "propertyName" : "."
+            }
+        )
+        
+        mapsHelperLib.applySaveMaps(param)
+        // console.log(JSON.stringify(param.sessionData, null, 4))
+
+        expect(param.sessionData.arrayList)
+            .to.be.an('array')
+            .that.is.lengthOf(3)
     });
 });
 
@@ -835,7 +902,7 @@ describe('outputMaps tests', function () {
         // console.log(output)
 
         expect(output)
-            .to.be.an('string')
+            .to.be.a('string')
             .that.equal("\n>> 1. sessionData.Helloworld!!!")
     });
 
@@ -854,7 +921,7 @@ describe('outputMaps tests', function () {
         // console.log(output)
 
         expect(output)
-            .to.be.an('string')
+            .to.be.a('string')
             .that.equal("Helloworld!!!")
     });
 
@@ -873,7 +940,7 @@ describe('outputMaps tests', function () {
         // console.log(output)
 
         expect(output)
-            .to.be.an('string')
+            .to.be.a('string')
             .that.equal("1. Helloworld!!!")
     });
 
@@ -892,7 +959,7 @@ describe('outputMaps tests', function () {
         // console.log(output)
 
         expect(output)
-            .to.be.an('string')
+            .to.be.a('string')
             .that.equal("{\n    \"stringValue\": \"sessionData.Helloworld!!!\"\n}")
     });
 
@@ -911,7 +978,7 @@ describe('outputMaps tests', function () {
         // console.log(output)
 
         expect(output)
-            .to.be.an('string')
+            .to.be.a('string')
             .that.equal("{\n    \"data\": \"value1\"\n}{\n    \"data\": \"value2\"\n}")
     });
 
@@ -930,7 +997,7 @@ describe('outputMaps tests', function () {
         // console.log(output)
 
         expect(output)
-            .to.be.an('string')
+            .to.be.a('string')
             .that.equal("1234567890")
     });
 
@@ -950,7 +1017,7 @@ describe('outputMaps tests', function () {
         // console.log(output)
 
         expect(output)
-            .to.be.an('string')
+            .to.be.a('string')
             .that.equal("")
     });
 
@@ -986,6 +1053,30 @@ describe('outputMaps tests', function () {
             .with.property('propertyName', 'invalid')
     });
 
+    it('outputMap - increase coverage undefined propertyName', function () {
+        var param = _.cloneDeep(param1)
+
+        // no outputMaps defined
+        param.outputMaps = undefined
+        expect(mapsHelperLib.applyOutputMaps(param))
+            .to.be.a('string')
+            .that.is.empty
+
+        // undefined propertyName
+        param.outputMaps = []
+        param.outputMaps.push(
+            {
+                "dataPath": ".",
+                "propertyName": undefined,
+                "outputFormat": "{{propertyName}}"
+            }
+        )
+
+        expect(mapsHelperLib.applyOutputMaps.bind(mapsHelperLib.applyOutputMaps, param))
+            .to.throw(PropertyUndefinedError)
+            .with.property('propertyName', undefined)
+    });
+
     it('outputMap - display array of objects', function () {
         var param = _.cloneDeep(param2)
 
@@ -1000,7 +1091,7 @@ describe('outputMaps tests', function () {
         // console.log(output)
 
         expect(output)
-            .to.be.an('string')
+            .to.be.a('string')
             .that.equal('\n>> 1. {\n    "name": "Rixos The Palm Dubai",\n    "location": [\n        25.1212,\n        55.1535\n    ]\n}\n>> 2. {\n    "name": "Shangri-La Hotel",\n    "location": [\n        25.2084,\n        55.2719\n    ]\n}\n>> 3. {\n    "name": "Grand Hyatt",\n    "location": [\n        25.2285,\n        55.3273\n    ]\n}')
     });
 
@@ -1024,7 +1115,7 @@ describe('outputMaps tests', function () {
             .with.property('propertyName', 'invalidSortBy')
 
         // expect(output)
-        //     .to.be.an('string')
+        //     .to.be.a('string')
         //     .that.equal('\n>> 1. {\n    "name": "Grand Hyatt",\n    "location": [\n        25.2285,\n        55.3273\n    ]\n}\n>> 2. {\n    "name": "Rixos The Palm Dubai",\n    "position": [\n        25.1212,\n        55.1535\n    ]\n}\n>> 3. {\n    "name": "Shangri-La Hotel",\n    "location": [\n        25.2084,\n        55.2719\n    ]\n}')
     });
 
@@ -1045,7 +1136,7 @@ describe('outputMaps tests', function () {
         // console.log(output)
 
         expect(output)
-            .to.be.an('string')
+            .to.be.a('string')
             .that.equal('\n>> 1. {\n    "name": "Grand Hyatt",\n    "location": [\n        25.2285,\n        55.3273\n    ]\n}\n>> 2. {\n    "name": "Rixos The Palm Dubai",\n    "location": [\n        25.1212,\n        55.1535\n    ]\n}\n>> 3. {\n    "name": "Shangri-La Hotel",\n    "location": [\n        25.2084,\n        55.2719\n    ]\n}')
     });
 
@@ -1067,7 +1158,7 @@ describe('outputMaps tests', function () {
         // console.log(output)
 
         expect(output)
-            .to.be.an('string')
+            .to.be.a('string')
             .that.equal('\n>> 1. {\n    "name": "Shangri-La Hotel",\n    "location": [\n        25.2084,\n        55.2719\n    ]\n}\n>> 2. {\n    "name": "Rixos The Palm Dubai",\n    "location": [\n        25.1212,\n        55.1535\n    ]\n}\n>> 3. {\n    "name": "Grand Hyatt",\n    "location": [\n        25.2285,\n        55.3273\n    ]\n}')
     });
 
@@ -1085,7 +1176,7 @@ describe('outputMaps tests', function () {
         // console.log(output)
 
         expect(output)
-            .to.be.an('string')
+            .to.be.a('string')
             .that.equal("\n>> 1. Rixos The Palm Dubai\n>> 2. Shangri-La Hotel\n>> 3. Grand Hyatt")
     });
 
@@ -1106,7 +1197,7 @@ describe('outputMaps tests', function () {
         // console.log(output)
 
         expect(output)
-            .to.be.an('string')
+            .to.be.a('string')
             .that.equal("\n>> 1. Grand Hyatt\n>> 2. Rixos The Palm Dubai\n>> 3. Shangri-La Hotel")
     });
 
@@ -1127,8 +1218,30 @@ describe('outputMaps tests', function () {
         // console.log(output)
 
         expect(output)
-            .to.be.an('string')
+            .to.be.a('string')
             .that.equal("\n>> 1. Shangri-La Hotel\n>> 2. Rixos The Palm Dubai\n>> 3. Grand Hyatt")
+    });
+
+    it('outputMap - disply not found message', function () {
+        var param = _.cloneDeep(param2)
+
+        param.outputMaps.push(
+            {
+                "dataPath": "responseBody.markers",
+                "propertyName": "name",
+                "notFoundMessage" : "Record not found",
+                "dataFilter" : {
+                    "startWith" : "desc"
+                }
+            }
+        )
+
+        var output = mapsHelperLib.applyOutputMaps(param)
+        // console.log(output)
+
+        expect(output)
+            .to.be.a('string')
+            .that.equal("Record not found")
     });
 });
 
@@ -1154,7 +1267,7 @@ describe('nextHopMap Tests', function () {
         },
         "noResults" : [],
 
-        "nextHopParams_desc" : "nextHopParams will be defaulted to empty array when not defined",
+        "nextHopParams" : [],
 
         "paramTemplate" : {
             "id" : "",
@@ -1233,7 +1346,42 @@ describe('nextHopMap Tests', function () {
         )
 
         expect(mapsHelperLib.applyNextHopMaps(param))
-            .to.be.an('string')
+            .to.be.a('string')
+            .that.is.empty
+
+        // console.log(JSON.stringify(param.nextHopParams, null, 4))
+        expect(param.nextHopParams)
+            .to.be.an('array')
+            .to.have.lengthOf(3)
+    });
+
+    it('nextHopMap - increase coverage for various condition', function () {
+        var param = _.cloneDeep(param1)
+
+        // clear nextHopMaps, test nextHopMaps == undefined
+        param.nextHopMaps = undefined
+
+        // no nextHopMaps provided
+        expect(mapsHelperLib.applyNextHopMaps(param))
+        .to.be.a('string')
+        .that.is.empty
+
+        // test propage param.id to nextHopParam
+        param.id = "2"
+
+        // test undefined nextHop params
+        param.nextHopParams = undefined
+
+        param.nextHopMaps = []
+        param.nextHopMaps.push(
+            {
+                "paramTemplateName" : "paramTemplate",
+                "dataPath" : "responseBody.markers"
+            }
+        )
+
+        expect(mapsHelperLib.applyNextHopMaps(param))
+            .to.be.a('string')
             .that.is.empty
 
         // console.log(JSON.stringify(param.nextHopParams, null, 4))
@@ -1261,9 +1409,10 @@ describe('nextHopMap Tests', function () {
 
         // var output = mapsHelperLib.applyNextHopMaps(param)
         expect(mapsHelperLib.applyNextHopMaps(param))
-            .to.be.an('string')
+            .to.be.a('string')
             .that.is.equal('No results found.')
 
+        // console.log(JSON.stringify(param.nextHopParams, null, 4))
         expect(param.nextHopParams)
             .to.be.an('array')
             .to.have.lengthOf(0)
@@ -1287,9 +1436,10 @@ describe('nextHopMap Tests', function () {
 
         // var output = mapsHelperLib.applyNextHopMaps(param)
         expect(mapsHelperLib.applyNextHopMaps(param))
-            .to.be.an('string')
+            .to.be.a('string')
             .that.is.empty
 
+        // console.log(JSON.stringify(param.nextHopParams, null, 4))
         expect(param.nextHopParams)
             .to.be.an('array')
             .to.have.lengthOf(0)
@@ -1312,12 +1462,201 @@ describe('nextHopMap Tests', function () {
         )
 
         expect(mapsHelperLib.applyNextHopMaps(param))
-            .to.be.an('string')
+            .to.be.a('string')
             .that.is.empty
 
         // console.log(JSON.stringify(param.nextHopParams, null, 4))
         expect(param.nextHopParams)
             .to.be.an('array')
             .to.have.lengthOf(1)
+    });
+});
+
+
+
+describe('filterData Error Tests', function () {
+    var param1 = {
+        "name" : "Mandarin Oriental",
+
+        "responseBody": {
+            "markers": [
+                {
+                    "name": "Rixos The Palm Dubai",
+                    "location": [25.1212, 55.1535],
+                },
+                {
+                    "name": "Shangri-La Hotel",
+                    "location": [25.2084, 55.2719]
+                },
+                {
+                    "name": "Grand Hyatt",
+                    "location": [25.2285, 55.3273]
+                }
+            ]
+        },
+
+        "sessionData" : {},
+
+        "saveMaps": []
+    }
+
+    it('filterData - no record return when no filter condition provided', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "hotels",
+                "dataPath": "responseBody.markers",
+                "dataFilter" : { }
+            }
+        )
+        
+        mapsHelperLib.applySaveMaps(param)
+        // console.log(JSON.stringify(param.sessionData, null, 4))
+
+        expect(param.sessionData.hotels)
+            .to.be.an('array')
+            .to.have.lengthOf(0)
+    });
+
+    it('filterData - equal error - propertName and dataValue is missing', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "hotels",
+                "dataPath": "responseBody.markers",
+                "dataFilter" : { 
+                    "equal": {
+                    }
+                }
+            }
+        )
+        
+        expect(mapsHelperLib.applySaveMaps.bind(mapsHelperLib.applySaveMaps, param))
+            .to.throw(PropertyUndefinedError)
+            .with.property('propertyName', undefined)
+    });
+
+    it('filterData - not equal error - left operand propertName is missing', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "hotels",
+                "dataPath": "responseBody.markers",
+                "dataFilter" : { 
+                    "notEqual": { }
+                }
+            }
+        )
+        
+        expect(mapsHelperLib.applySaveMaps.bind(mapsHelperLib.applySaveMaps, param))
+            .to.throw(PropertyUndefinedError)
+            .with.property('propertyName', undefined)
+    });
+
+    it('filterData - not equal error - right operand invalid propertName', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "hotels",
+                "dataPath": "responseBody.markers",
+                "dataFilter" : { 
+                    "propertyName" : "name",
+                    "notEqual": {
+                        "propertyName" : "invalid"
+                    }
+                }
+            }
+        )
+        
+        expect(mapsHelperLib.applySaveMaps.bind(mapsHelperLib.applySaveMaps, param))
+            .to.throw(PropertyUndefinedError)
+            .with.property('propertyName', 'invalid')
+    });
+
+    it('filterData - not equal error - right operand invalid missing propertName and undefined dataValue', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "hotels",
+                "dataPath": "responseBody.markers",
+                "dataFilter" : { 
+                    "propertyName" : "name",
+                    "notEqual": {
+                        "dataValue" : undefined
+                    }
+                }
+            }
+        )
+        
+        expect(mapsHelperLib.applySaveMaps.bind(mapsHelperLib.applySaveMaps, param))
+            .to.throw(PropertyUndefinedError)
+            .with.property('propertyName')
+            .that.is.lengthOf(2)
+    });
+
+    it('filterData - greaterThan error - left operand propertName is missing', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "hotels",
+                "dataPath": "responseBody.markers",
+                "dataFilter" : { 
+                    "greaterThan": { }
+                }
+            }
+        )
+        
+        expect(mapsHelperLib.applySaveMaps.bind(mapsHelperLib.applySaveMaps, param))
+            .to.throw(PropertyUndefinedError)
+            .with.property('propertyName', undefined)
+    });
+
+    it('filterData - greaterThan error - right operand invalid propertName', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "hotels",
+                "dataPath": "responseBody.markers",
+                "dataFilter" : { 
+                    "propertyName" : "name",
+                    "greaterThan": {
+                        "propertyName" : "invalid"
+                    }
+                }
+            }
+        )
+        
+        expect(mapsHelperLib.applySaveMaps.bind(mapsHelperLib.applySaveMaps, param))
+            .to.throw(PropertyUndefinedError)
+            .with.property('propertyName', 'invalid')
+    });
+
+    it('filterData - greaterThan error - right operand invalid missing propertName and undefined dataValue', function () {
+        var param = _.cloneDeep(param1)
+
+        param.saveMaps.push(
+            {
+                "sessionName": "hotels",
+                "dataPath": "responseBody.markers",
+                "dataFilter" : { 
+                    "propertyName" : "name",
+                    "greaterThan": {
+                        "dataValue" : undefined
+                    }
+                }
+            }
+        )
+        
+        expect(mapsHelperLib.applySaveMaps.bind(mapsHelperLib.applySaveMaps, param))
+            .to.throw(PropertyUndefinedError)
+            .with.property('propertyName')
+            .that.is.lengthOf(2)
     });
 });

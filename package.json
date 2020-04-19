@@ -1,13 +1,13 @@
 {
   "name": "api-test-helper-v2",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "Helper Library to test API",
   "main": "index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "nyc ./node_modules/.bin/mocha --recursive test/scripts/",
+    "test": "nyc --reporter=text --reporter=html ./node_modules/.bin/mocha --recursive test/scripts/",
     "start": "node ./test/schemaValidation.js"
   },
   "repository": {
