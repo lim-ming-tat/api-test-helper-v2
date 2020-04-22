@@ -1,6 +1,6 @@
 {
   "name": "api-test-helper-v2",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "Helper Library to test API",
   "main": "index.js",
   "directories": {
