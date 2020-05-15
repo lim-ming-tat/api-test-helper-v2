@@ -286,6 +286,10 @@ util.displayTestResult = () => {
     return Promise.resolve("Test Results::: " + passedTest + "/" + totalTest + "\nSkip Test   ::: " + skipTest);
 }
 
+util.getTestResult = () =>{
+    return { "totalTest" : totalTest, "passedTest" : passedTest, "skipTest" : skipTest }
+}
+
 var startDate;
 util.startTestTimer = () => {
     //startDate = new Date();
@@ -409,11 +413,19 @@ function applyReplaceMaps(param) {
         if (param.sessionData.csrfToken) param.httpHeaders['X-' + param.sessionData.csrfToken.name] = param.sessionData.csrfToken.token;
     }
 
+    if (param.setupBasicAuth){
+        if (param.httpHeaders == undefined) param.httpHeaders = {};
+
+        var token = new Buffer.from(`${param.sessionData.secret.pmUserId}:${param.sessionData.secret.pmPassword}`).toString('base64');
+        param.httpHeaders["Authorization"] = `Basic ${token}`
+    }
+
     // replace property value with value from sessionData
     if (param.replaceMaps != undefined) {
         param.replaceMaps.forEach(item => {
             // skipTest mapping has been perfrom during skipTestCheck, skip it here...
-            if (item.propertyName != "skipTest") {
+            // if (item.propertyName != "skipTest") {
+            if (!(item.propertyName == "skipTest" || (item.preHttpRequest != undefined && item.preHttpRequest))) {
                 if (typeof _.get(param, item.propertyName) == "string") {
                     var replace = "{{" + item.replaceValue + "}}";
                     var regex = new RegExp(replace, "g");
@@ -431,7 +443,7 @@ function skipTestCheck(param) {
     // perform replace mapping for skipTest only, as it should be validated before the preHttpRequest processing
     if (param.replaceMaps != undefined) {
         param.replaceMaps.forEach(item => {
-            if (item.propertyName == "skipTest") {
+            if (item.propertyName == "skipTest" || (item.preHttpRequest != undefined && item.preHttpRequest)) {
                 _.set(param, item.propertyName, _.get(param, item.replaceValue));
             }
         });
@@ -686,6 +698,7 @@ util.executeTest = (param) => {
                 if (param.debug && param.error.stack != undefined) {
                     message += "\n" + indentation + param.error.stack.replace(/\n/g, "\n" + indentation);
                 }
+                // message += "\n" + JSON.stringify(param, null ,4)
             }
             if (!param.debug && param.verifyMessage != undefined && param.verifyMessage.trim().length > 0) {
                 message += "\n" + indentation + "Validation failed - " + setColor.error(param.verifyMessage) 
