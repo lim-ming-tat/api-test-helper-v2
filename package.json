@@ -8,7 +8,9 @@
   },
   "scripts": {
     "test": "nyc --reporter=text --reporter=html ./node_modules/.bin/mocha --recursive test/scripts/",
-    "start": "node ./test/schemaValidation.js"
+    "start": "node ./test/schemaValidation.js",
+    "standard": "npx standard",
+    "fix": "npx standard --fix"
   },
   "repository": {
     "type": "git",
@@ -34,6 +36,10 @@
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "mocha": "^7.1.1",
-    "nyc": "^15.0.1"
+    "nyc": "^15.0.1",
+    "standard": "^14.3.4"
+  },
+  "standard": {
+    "globals": [ "it", "describe", "expect" ]
   }
 }
