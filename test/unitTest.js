@@ -32,6 +32,7 @@ Promise.resolve()
 
   .then(helper.displayTestResult).then(message => console.log('\n' + message))
   .then(helper.displayElapseTime).then(message => console.log('\n' + message + '\n'))
+  .then( function () { return console.log('\n' + "Expecting Result to be 30/32" + '\n') } )
   .catch(function (error) {
     console.log(error)
   })

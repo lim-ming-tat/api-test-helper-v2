@@ -19,19 +19,16 @@
         "id" : "003.1",
         "description" : "Parameters Template. Invalid URL.",
 
-        "invokeUrl" : "https://www.sample.com/",
-
-        "negativeTest" : true,
-        "testErrorMessage" : "connect ECONNREFUSED 173.230.129.147:443"
+        "invokeUrl" : "https://www.invalid.url/"
     },
     {
         "id" : "003.2",
         "description" : "Parameters Template. Negative test flag set to true and will be counted as successful called. <<<\n>>> By default 'negativeTest' flag is set to 'False'.<<<\n>>>",
 
-        "invokeUrl" : "https://www.sample.com/",
+        "invokeUrl" : "https://www.invalid.url/",
 
         "negativeTest" : true,
-        "testErrorMessage" : "connect ECONNREFUSED 173.230.129.147:443"
+        "testErrorMessage" : "getaddrinfo ENOTFOUND www.invalid.url www.invalid.url:443"
     },
     {
         "id" : "003.3",
