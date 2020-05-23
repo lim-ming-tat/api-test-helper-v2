@@ -1301,28 +1301,29 @@ describe('nextHopMap Tests', function () {
             .with.property('propertyName', 'invalidParamTemplate')
     });
 
-    it('nextHopMap - invalid dataPath', function () {
-        var param = _.cloneDeep(param1)
+    // not required, assume there are not record found in response...
+    // it('nextHopMap - invalid dataPath', function () {
+    //     var param = _.cloneDeep(param1)
 
-        param.nextHopMaps.push(
-            {
-                "paramTemplateName" : "paramTemplate",
-                "dataPath" : "responseBody.invalid",
-                "notFoundMessage" : "\n>> No markers found.",
-                "replaceMaps" : [
-                    {
-                        "propertyName" : "description",
-                        "replaceValue" : "name"
-                    }
-                ]    
-            }
-        )
+    //     param.nextHopMaps.push(
+    //         {
+    //             "paramTemplateName" : "paramTemplate",
+    //             "dataPath" : "responseBody.invalid",
+    //             "notFoundMessage" : "\n>> No markers found.",
+    //             "replaceMaps" : [
+    //                 {
+    //                     "propertyName" : "description",
+    //                     "replaceValue" : "name"
+    //                 }
+    //             ]    
+    //         }
+    //     )
 
-        // var output = mapsHelperLib.applyNextHopMaps(param)
-        expect(mapsHelperLib.applyNextHopMaps.bind(mapsHelperLib.applyNextHopMaps, param))
-            .to.throw(DataPathUndefinedError)
-            .with.property('propertyName', 'responseBody.invalid')
-    });
+    //     // var output = mapsHelperLib.applyNextHopMaps(param)
+    //     expect(mapsHelperLib.applyNextHopMaps.bind(mapsHelperLib.applyNextHopMaps, param))
+    //         .to.throw(DataPathUndefinedError)
+    //         .with.property('propertyName', 'responseBody.invalid')
+    // });
 
     it('nextHopMap - return nextHopParams as array based on input recordset', function () {
         var param = _.cloneDeep(param1)
