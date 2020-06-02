@@ -3,7 +3,7 @@
 const crypto = require('crypto')
 const request = require('superagent')
 const fs = require('fs')
-const promise = require('bluebird')
+const Promise = require('bluebird')
 const qs = require('querystring')
 const { URL } = require('url')
 
@@ -28,7 +28,7 @@ function nonceLib () {
 }
 
 util.invokeRequest = (param) => {
-  return new promise(function (resolve, reject) {
+  return new Promise(function (resolve, reject) {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1'
     if (param.ignoreServerCert == undefined || param.ignoreServerCert) { process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0' }
 
@@ -446,10 +446,10 @@ function skipTestCheck (param) {
 }
 
 util.executeTest = (param) => {
-  return new promise(function (resolve, reject) {
+  return new Promise(function (resolve, reject) {
     var childMessage = ''
 
-    return new promise(function (resolve) {
+    return new Promise(function (resolve) {
       // propagate default params
       propagateDefaultValue(param)
 
