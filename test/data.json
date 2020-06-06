@@ -1,7 +1,20 @@
-{
-    "id" : "1",
-    "description" : "Simple Parameter Template.",
+[
+    {
+        "id" : "1",
+        "description" : "Simple Parameter Template.",
 
-    "invokeUrl" : "http://www.example.com/",
-    "httpMethod" : "GET"
-}
+        "invokeUrl" : "http://www.example.com",
+        "httpMethod" : "GET",
+
+        "debug" : false
+    },
+    {
+        "id" : "2",
+        "description" : "Simple Parameter Template.",
+
+        "invokeUrl" : "http://www.example.com/test",
+        "httpMethod" : "GET",
+
+        "debug" : false
+    }
+]

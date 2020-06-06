@@ -30,6 +30,7 @@
     "luxon": "^1.23.0",
     "node-apex-api-security": "github:GovTechSG/node-apex-api-security",
     "node-jose": "^1.1.4",
+    "node-json-color-stringify": "^1.1.0",
     "superagent": "^5.2.2"
   },
   "devDependencies": {
@@ -40,6 +41,10 @@
     "standard": "^14.3.4"
   },
   "standard": {
-    "globals": [ "it", "describe", "expect" ]
+    "globals": [
+      "it",
+      "describe",
+      "expect"
+    ]
   }
 }

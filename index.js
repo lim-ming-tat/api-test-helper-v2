@@ -9,6 +9,8 @@ const { URL } = require('url')
 
 const _ = require('lodash')
 
+require('node-json-color-stringify');
+
 const apex = require('node-apex-api-security').ApiSigningUtil
 const mapsHelperLib = require('./lib/mapsHelperLib')
 const { PropertyUndefinedError } = require('./lib/errors')
@@ -31,6 +33,9 @@ util.invokeRequest = (param) => {
   return new Promise(function (resolve, reject) {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1'
     if (param.ignoreServerCert == undefined || param.ignoreServerCert) { process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0' }
+
+    // clear http requestParam
+    param.requestParam = undefined
 
     const targetURL = new URL(param.invokeUrl)
 
@@ -140,6 +145,20 @@ util.invokeRequest = (param) => {
 
       req = req.type('multipart/form-data')
     }
+
+    // save the http request
+    var tempReq = JSON.parse(JSON.stringify(req))
+
+    // format request data into json
+    if (tempReq.data != undefined && tempReq.headers["content-type"] == "application/json") {
+        tempReq.data = JSON.parse(tempReq.data)
+    }
+
+    // remove session cookie
+    if (tempReq.headers["cookie"]) tempReq.headers["cookie"] = undefined
+    if (tempReq.headers["x-csrf-token_training"]) tempReq.headers["x-csrf-token_training"] = undefined
+
+    param.requestParam = tempReq
 
     // param.startTime = new Date();
     param.startTime = DateTime.local()
@@ -579,6 +598,11 @@ util.executeTest = (param) => {
           // console.log(">>> " + param.id + ". " + param.description + " <<< - Start.");
           message += '\n>>> ' + param.id + '. ' + getDescription(param) + ' <<< - Start.'
 
+          // show the http request
+          if (param.requestParam != undefined) {
+            message += '\n' + indentation + 'HTTP Request::: \n' + indentation + JSON.colorStringify(param.requestParam, null, 4).replace(/\n/g, '\n' + indentation) + '\n'
+          }
+
           if (param.baseString != undefined) {
             // console.log('\nBaseString::: \n' + param.baseString);
             message += '\n' + indentation + 'BaseString::: \n' + indentation + param.baseString + '\n'
@@ -661,9 +685,12 @@ util.executeTest = (param) => {
             // console.log();
 
             message += '\n>>> ' + param.id + '. ' + getDescription(param) + ' <<< - Start.'
-            // message += indentation + "URL:::\n"
-            // message += indentation + setColor.warn(param.invokeUrl)
-            // message += "\n"
+
+            // show the http request
+            if (param.requestParam != undefined) {
+                message += '\n' + indentation + 'HTTP Request::: \n' + indentation + JSON.colorStringify(param.requestParam, null, 4).replace(/\n/g, '\n' + indentation) + '\n'
+            }
+
             message += `\n${indentation}URL::: ${setColor.warn(param.invokeUrl)}`
           }
           // console.log(">>> " + param.id + ". " + param.description + " <<< - Failed. " + param.error.message);
