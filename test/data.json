@@ -16,5 +16,38 @@
         "httpMethod" : "GET",
 
         "debug" : false
+    },
+    {
+        "id" : "3",
+        "description" : "Simple Parameter Template.",
+
+        "invokeUrl" : "http://www.example.com",
+        "httpMethod" : "POST",
+
+        "jsonData" : {
+            "email": "administrator@apexcore",
+            "password": "password"
+        },
+
+        "debug" : true
+    },
+    {
+        "id" : "4",
+        "description" : "Simple Parameter Template.",
+
+        "invokeUrl" : "http://www.example.com/test",
+        "httpMethod" : "POST",
+
+        "httpHeaders" : {
+            "Connection": "keep-alive",
+            "Accept" : "application/json"
+        },
+
+        "jsonData" : {
+            "email": "administrator@apexcore",
+            "password": "password"
+        },
+
+        "debug" : false
     }
 ]

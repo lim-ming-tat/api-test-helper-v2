@@ -600,7 +600,13 @@ util.executeTest = (param) => {
 
           // show the http request
           if (param.requestParam != undefined) {
-            message += '\n' + indentation + 'HTTP Request::: \n' + indentation + JSON.colorStringify(param.requestParam, null, 4).replace(/\n/g, '\n' + indentation) + '\n'
+            message += '\n' + indentation + 'HTTP Request::: \n' + indentation + JSON.colorStringify(param.requestParam, (key, value) => {
+                if (key === 'password') {
+                  return "***";
+                }
+              
+                return value;
+              }, 4).replace(/\n/g, '\n' + indentation) + '\n'
           }
 
           if (param.baseString != undefined) {
@@ -688,7 +694,13 @@ util.executeTest = (param) => {
 
             // show the http request
             if (param.requestParam != undefined) {
-                message += '\n' + indentation + 'HTTP Request::: \n' + indentation + JSON.colorStringify(param.requestParam, null, 4).replace(/\n/g, '\n' + indentation) + '\n'
+                message += '\n' + indentation + 'HTTP Request::: \n' + indentation + JSON.colorStringify(param.requestParam, (key, value) => {
+                    if (key === 'password') {
+                      return "***";
+                    }
+                  
+                    return value;
+                  }, 4).replace(/\n/g, '\n' + indentation) + '\n'
             }
 
             message += `\n${indentation}URL::: ${setColor.warn(param.invokeUrl)}`
