@@ -154,9 +154,18 @@ util.invokeRequest = (param) => {
         tempReq.data = JSON.parse(tempReq.data)
     }
 
-    // remove session cookie
-    if (tempReq.headers["cookie"]) tempReq.headers["cookie"] = undefined
-    if (tempReq.headers["x-csrf-token_training"]) tempReq.headers["x-csrf-token_training"] = undefined
+    // replace sensitive datat with ***
+    tempReq = JSON.parse(JSON.stringify(tempReq, (key, value) => {
+        if (key === 'password') {
+          return "***"
+        } else if (key === 'cookie') {
+          return "***"
+        } else if (key.startsWith('x-csrf-token_')) {
+            return "***"
+        }
+      
+        return value;
+      }))
 
     param.requestParam = tempReq
 
@@ -600,13 +609,7 @@ util.executeTest = (param) => {
 
           // show the http request
           if (param.requestParam != undefined) {
-            message += '\n' + indentation + 'HTTP Request::: \n' + indentation + JSON.colorStringify(param.requestParam, (key, value) => {
-                if (key === 'password') {
-                  return "***";
-                }
-              
-                return value;
-              }, 4).replace(/\n/g, '\n' + indentation) + '\n'
+            message += '\n' + indentation + 'HTTP Request::: \n' + indentation + JSON.colorStringify(param.requestParam, null, 4).replace(/\n/g, '\n' + indentation) + '\n'
           }
 
           if (param.baseString != undefined) {
@@ -694,13 +697,7 @@ util.executeTest = (param) => {
 
             // show the http request
             if (param.requestParam != undefined) {
-                message += '\n' + indentation + 'HTTP Request::: \n' + indentation + JSON.colorStringify(param.requestParam, (key, value) => {
-                    if (key === 'password') {
-                      return "***";
-                    }
-                  
-                    return value;
-                  }, 4).replace(/\n/g, '\n' + indentation) + '\n'
+                message += '\n' + indentation + 'HTTP Request::: \n' + indentation + JSON.colorStringify(param.requestParam, null, 4).replace(/\n/g, '\n' + indentation) + '\n'
             }
 
             message += `\n${indentation}URL::: ${setColor.warn(param.invokeUrl)}`
