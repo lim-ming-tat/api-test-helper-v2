@@ -35,6 +35,64 @@
         "id" : "4",
         "description" : "Simple Parameter Template.",
 
+        "sessionData" : {
+            "gatewayName": "gcc",
+            "agencyProjectName": "cpf",
+            "agencyName": "CPF",
+            "agencyNameLower": "cpf",
+            "gatewayPolicyPrefix": "gcc",
+            "cmServer": {
+                "httpProtocol": "https",
+                "serverFqdn": "gcc.cm.gw3.apex.gdshive.com",
+                "port": 443
+            },
+            "pmServer": {
+                "httpProtocol": "https",
+                "serverFqdn": "pm.gw3.apex.gdshive.com",
+                "port": 443,
+                "path": ""
+            },
+            "secret": {
+                "cmUserId": "apex.gcc@gmail.com",
+                "cmPassword": "password",
+                "pmUserId": "adminx",
+                "pmPassword": "password"
+            },
+            "apiGateway": {
+                "httpProtocol": "https",
+                "port": 443,
+                "invokeFqdn": "cpf.apx.gw3.apex.gdshive.com",
+                "signingFqdn": "cpf.apx.gw3.apex.gdshive.com",
+                "internalFqdn": "cpf.apx.gw3.apex.gdshive.com"
+            },
+            "searchBy": "[CM API v1]",
+            "targetEndpoint": {
+                "soapApi": "https://sherlock.apex.gdshive.com/soap/helloworldServ",
+                "restApi": "https://sherlock.apex.gdshive.com/rest/api/helloworld",
+                "echoApi": "https://wfg8neqn09.execute-api.ap-southeast-1.amazonaws.com/Stage/api/headers"
+            },
+            "proxyGateway": {
+                "httpProtocol": "https",
+                "port": 443,
+                "signingFqdn": "cpf-pvt.apy.gw3.apex.gdshive.com"
+            },
+            "domain": "apex.gdshive.com",
+            "zone": "apx",
+            "proxyZone": "apy",
+            "cluster": "gw3",
+            "atmoToken": {
+                "name": "AtmoAuthToken_gcc",
+                "token": "TokenID%3Dfabce0b9-e880-4069-82fd-cd440687ea8f%2Cclaimed_id%3Durn%3Aatmosphere%3Auser%3Agcc%3A13e69d2b-1b6e-4486-a752-ee379eb02baa%2CissueTime%3D1591502618689%2CexpirationTime%3D1591504478670%2CUserName%3Dadmingcc%2CUserFDN%3D13e69d2b-1b6e-4486-a752-ee379eb02baa%252Egcc%2CAttributesIncluded%3Dfalse%2Csig%3Ds6TOU_8R_PHpwbfcUWZnfCWw_FMeh_HqVCgPOZOvet9jpMCbmr5XkGKGBqn-1GaKTRhTO2dXKHKqmGw-NswSPWPfDhiURJyHraLnk6KWQiiGiARPMeJE2GH0xvhX-lF_AE8cY-c48aJHuQgLD4SS8YIaTg4MZhUIho4FSx-toYVAlCTGkaBwQ9TUYvk1RbUsCN9yo1qLZmF2A5tfh-S9Am5CLI2woxOgz93nWdExqKZdX_LCFEAjai9BE1el3fJAxJ4Ki-jUmUho0yn3eehBd9fpxQkTZOLLe8bTC5OfGFBP6AsqN3exA6C-Hn3AUMZCvVMBjYu1uf9zUWfEVNZJKWnQLVB8cyRPbUcH-ZjS5r2Xj8tnTbuvcREzCes1qLfcZWqEXWI6YUVQFYNKvboyh2gMBQTdg_UGQvgLtu7VkbByYDHJPUm3ZvR0E12y9iksiuIpAwAxKLUlgnk5MSqA-2_MFBudH-Ddy7_rnesfPspvdoaYD1kVmZ6w8AlpreVgDTccGa45OGSw3VSAxe1U8U_dnZefie8ahatCglWpZ8fF_N9rQNF5JrHQE-AEoq8ioGK5Twv1lMyaHuHS7omS9_tAb81RvjOTSx4CDuhmA3_4aYrcIHdgA5xQVaD4D9gnZj5AcPUM-Wx5q1k46ZTlKxuMUiEef7OJANBqjVlF6zs",
+                "cookie": "AtmoAuthToken_gcc=TokenID%3Dfabce0b9-e880-4069-82fd-cd440687ea8f%2Cclaimed_id%3Durn%3Aatmosphere%3Auser%3Agcc%3A13e69d2b-1b6e-4486-a752-ee379eb02baa%2CissueTime%3D1591502618689%2CexpirationTime%3D1591504478670%2CUserName%3Dadmingcc%2CUserFDN%3D13e69d2b-1b6e-4486-a752-ee379eb02baa%252Egcc%2CAttributesIncluded%3Dfalse%2Csig%3Ds6TOU_8R_PHpwbfcUWZnfCWw_FMeh_HqVCgPOZOvet9jpMCbmr5XkGKGBqn-1GaKTRhTO2dXKHKqmGw-NswSPWPfDhiURJyHraLnk6KWQiiGiARPMeJE2GH0xvhX-lF_AE8cY-c48aJHuQgLD4SS8YIaTg4MZhUIho4FSx-toYVAlCTGkaBwQ9TUYvk1RbUsCN9yo1qLZmF2A5tfh-S9Am5CLI2woxOgz93nWdExqKZdX_LCFEAjai9BE1el3fJAxJ4Ki-jUmUho0yn3eehBd9fpxQkTZOLLe8bTC5OfGFBP6AsqN3exA6C-Hn3AUMZCvVMBjYu1uf9zUWfEVNZJKWnQLVB8cyRPbUcH-ZjS5r2Xj8tnTbuvcREzCes1qLfcZWqEXWI6YUVQFYNKvboyh2gMBQTdg_UGQvgLtu7VkbByYDHJPUm3ZvR0E12y9iksiuIpAwAxKLUlgnk5MSqA-2_MFBudH-Ddy7_rnesfPspvdoaYD1kVmZ6w8AlpreVgDTccGa45OGSw3VSAxe1U8U_dnZefie8ahatCglWpZ8fF_N9rQNF5JrHQE-AEoq8ioGK5Twv1lMyaHuHS7omS9_tAb81RvjOTSx4CDuhmA3_4aYrcIHdgA5xQVaD4D9gnZj5AcPUM-Wx5q1k46ZTlKxuMUiEef7OJANBqjVlF6zs"
+            },
+            "csrfToken": {
+                "name": "Csrf-Token_gcc",
+                "token": "TokenID%3Dfabce0b9-e880-4069-82fd-cd440687ea8f%2CexpirationTime%3D1591504418713%2CUserFDN%3D13e69d2b-1b6e-4486-a752-ee379eb02baa%252Egcc%2Csig%3DdXk_4Pn18uMdRCZY3Y5wWHLXqS29Ye9GJFxtIhKMeHc2Kysgt4AXWR4kWT4-8W7BAaRgqq_epgnH-60HhUydpTPiYJmFwGRy1f3nNhmf5K4mInkRG-41Gpo8Z94gQm_4lo94Xq-wPT5jImtzmmBgiUlL1LnhVwLAuQDq3XzMUkGqkG4ajUD1Ssr0KT1D4k-8sQuxYDrWNO0Zt6LJTM1jzkuWr0JJbjrTbZ_exeHCjbO6LzD17U3oRnXuD9lrgUOtqI9YLvKaUjYAv0GJQq1x-SuUxqFjWpgyU_tTNDu3dpgKg5eUugpi-eefW7c5X8t7lVoNM85XGf9x4bskPQlnhSfJvPx3a3knivcfU9-o4aJq5STEsJ7vJrE2zEOL9Hk4SqP8QuDp-jjh4Bx0mZaPsPoRTd0YvhTPPlGvRUAs5cnsmkQJXxyHdENM1Xs1s-84BS9Hlik37oKspsio-VmtfmwZUikgpAmBGlQVwBlKiHJUwbGbnFQ9OBZSBUvIeScBW1-IkVDuY3Gk2oJkQmK88kB5WiWWeebvS-Dpbq_sc0TcNf9Ru_d5LDxiXoN8oI0RAQ_TXN61y960tJ4IJQp2fhFyMpotoXMebjgs5clguszpfqmcVxcjzHWBoIMpvIPeLo4j-Mb6gA_8qns1TSONeCqzHFohLTzzSBQEhjLlXl8",
+                "cookie": "Csrf-Token_gcc=TokenID%3Dfabce0b9-e880-4069-82fd-cd440687ea8f%2CexpirationTime%3D1591504418713%2CUserFDN%3D13e69d2b-1b6e-4486-a752-ee379eb02baa%252Egcc%2Csig%3DdXk_4Pn18uMdRCZY3Y5wWHLXqS29Ye9GJFxtIhKMeHc2Kysgt4AXWR4kWT4-8W7BAaRgqq_epgnH-60HhUydpTPiYJmFwGRy1f3nNhmf5K4mInkRG-41Gpo8Z94gQm_4lo94Xq-wPT5jImtzmmBgiUlL1LnhVwLAuQDq3XzMUkGqkG4ajUD1Ssr0KT1D4k-8sQuxYDrWNO0Zt6LJTM1jzkuWr0JJbjrTbZ_exeHCjbO6LzD17U3oRnXuD9lrgUOtqI9YLvKaUjYAv0GJQq1x-SuUxqFjWpgyU_tTNDu3dpgKg5eUugpi-eefW7c5X8t7lVoNM85XGf9x4bskPQlnhSfJvPx3a3knivcfU9-o4aJq5STEsJ7vJrE2zEOL9Hk4SqP8QuDp-jjh4Bx0mZaPsPoRTd0YvhTPPlGvRUAs5cnsmkQJXxyHdENM1Xs1s-84BS9Hlik37oKspsio-VmtfmwZUikgpAmBGlQVwBlKiHJUwbGbnFQ9OBZSBUvIeScBW1-IkVDuY3Gk2oJkQmK88kB5WiWWeebvS-Dpbq_sc0TcNf9Ru_d5LDxiXoN8oI0RAQ_TXN61y960tJ4IJQp2fhFyMpotoXMebjgs5clguszpfqmcVxcjzHWBoIMpvIPeLo4j-Mb6gA_8qns1TSONeCqzHFohLTzzSBQEhjLlXl8"
+            },
+            "userFDN": "13e69d2b-1b6e-4486-a752-ee379eb02baa.gcc"
+        },
+
         "invokeUrl" : "http://www.example.com/test",
         "httpMethod" : "POST",
 
@@ -49,6 +107,7 @@
             "password": "password"
         },
 
+        "debugSession" : true,
         "debug" : false
     }
 ]

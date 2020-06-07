@@ -411,7 +411,27 @@ util.getDefaultParam = () => {
 }
 
 util.displaySessionData = () => {
-  return Promise.resolve('Session Data::: ' + JSON.stringify(defaultParam.sessionData, null, 4))
+  return Promise.resolve(formatSessionData(defaultParam))
+}
+
+function formatSessionData(param) {
+    return JSON.colorStringify(param.sessionData, (key, value) => {
+        if (key === 'password') {
+          return "***"
+        } else if (key === 'cmPassword') {
+            return "***"
+        } else if (key === 'pmPassword') {
+            return "***"
+        } else if (key === 'token') {
+            return "***"
+        } else if (key === 'cookie') {
+          return "***"
+        } else if (key.startsWith('x-csrf-token_')) {
+            return "***"
+        }
+      
+        return value;
+      }, 4)
 }
 
 function propagateDefaultValue (param) {
@@ -741,6 +761,10 @@ util.executeTest = (param) => {
           }
         }
 
+        if (param.debugSession) {
+            message += '\n' + indentation + 'Session Data::: \n' + indentation + formatSessionData(param).replace(/\n/g, '\n' + indentation) + '\n'
+        }
+  
         // if (param.showElapseTime) console.log("\n" + getElapseTime(param.startTime, param.timespan));
         if (param.showElapseTime) {
           // console.log("\n" + getElapseTime(param.startTime, param.endTime));
