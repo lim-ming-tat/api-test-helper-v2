@@ -237,11 +237,14 @@ util.performTestRecursive = (params) => {
     for (var i = 0; i < parallel; i++) {
       var newItem = JSON.parse(itemJson)
 
-      if (newItem.queryString == undefined) newItem.queryString = {}
+    //   if (newItem.queryString == undefined) newItem.queryString = {}
+      if (newItem.httpHeaders == undefined) newItem.httpHeaders = { "X-Correlation-ID" : undefined }
 
       newItem.id += ' parallel=' + i
-      newItem.queryString.llid = require('uuid/v1')().substring(0, 8)
-      newItem.description += ' llid=' + newItem.queryString.llid
+    //   newItem.queryString.llid = require('uuid/v1')().substring(0, 8)
+    //   newItem.description += ' llid=' + newItem.queryString.llid
+      newItem.httpHeaders["X-Correlation-ID"] = require('uuid/v1')().substring(0, 8)
+      newItem.description += ' llid=' + newItem.httpHeaders["X-Correlation-ID"]
 
       functionArray.push(util.performTestRecursive(newItem))
     }
@@ -254,13 +257,16 @@ util.performTestRecursive = (params) => {
       item.repeats = undefined
 
       // assign uuid to first item
-      if (item.queryString == undefined) item.queryString = {}
+    //   if (item.queryString == undefined) item.queryString = {}
+      if (item.httpHeaders == undefined) item.httpHeaders = { "X-Correlation-ID" : undefined }
 
       var stringCopy = JSON.stringify(item)
 
       item.id += ' repeat=1'
-      item.queryString.uuid = require('uuid/v1')().substring(0, 8)
-      item.description += ' uuid=' + item.queryString.uuid
+    //   item.queryString.uuid = require('uuid/v1')().substring(0, 8)
+    //   item.description += ' uuid=' + item.queryString.uuid
+      item.httpHeaders["X-Correlation-ID"] = require('uuid/v1')().substring(0, 8)
+      item.description += ' uuid=' + item.httpHeaders["X-Correlation-ID"]
 
       var repeatedParam = ''
       if (repeats == 0) {
@@ -275,7 +281,9 @@ util.performTestRecursive = (params) => {
       // assign uuid to the rest
       _.forEach(repeatedParam, function (param) {
         param.id += ' repeat=' + ++repeatCounter
-        param.queryString.uuid = require('uuid/v1')().substring(0, 8); param.description += ' uuid=' + param.queryString.uuid
+        // param.queryString.uuid = require('uuid/v1')().substring(0, 8); param.description += ' uuid=' + param.queryString.uuid
+        param.httpHeaders["X-Correlation-ID"] = require('uuid/v1')().substring(0, 8)
+        param.description += ' uuid=' + param.httpHeaders["X-Correlation-ID"]
       })
 
       newParams = _.concat(repeatedParam, newParams)
