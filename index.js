@@ -18,6 +18,12 @@ const { PropertyUndefinedError } = require('./lib/errors')
 // const dateFormat = require('./timestamp').dateFormat;
 const { DateTime } = require('luxon')
 
+// escape regular expression character
+// credit: https://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
+RegExp.escape = function (s) {
+    return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+}
+  
 var totalTest = 0
 var passedTest = 0
 var skipTest = 0
@@ -95,7 +101,7 @@ util.invokeRequest = (param) => {
           var jsonData = JSON.stringify(postData)
 
           for (const key in param.textData.replaceMapper) {
-            var replace = '{{' + key + '}}'
+            var replace = '{{' + RegExp.escape(key) + '}}'
             var regex = new RegExp(replace, 'g')
 
             jsonData = jsonData.replace(regex, _.get(param, _.get(param.textData.replaceMapper, key)))
@@ -476,7 +482,7 @@ function applyReplaceMaps (param) {
       // if (item.propertyName != "skipTest") {
       if (!(item.propertyName == 'skipTest' || (item.preHttpRequest != undefined && item.preHttpRequest))) {
         if (typeof _.get(param, item.propertyName) === 'string') {
-          var replace = '{{' + item.replaceValue + '}}'
+          var replace = '{{' + RegExp.escape(item.replaceValue) + '}}'
           var regex = new RegExp(replace, 'g')
 
           _.set(param, item.propertyName, _.get(param, item.propertyName).replace(regex, _.get(param, item.replaceValue)))
