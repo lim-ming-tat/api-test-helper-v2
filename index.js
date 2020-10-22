@@ -482,10 +482,22 @@ function applyReplaceMaps (param) {
       // if (item.propertyName != "skipTest") {
       if (!(item.propertyName == 'skipTest' || (item.preHttpRequest != undefined && item.preHttpRequest))) {
         if (typeof _.get(param, item.propertyName) === 'string') {
-          var replace = '{{' + RegExp.escape(item.replaceValue) + '}}'
+          //var replace = '{{' + item.replaceValue + '}}'
+          var replace = ""
+          var newValue = ""
+
+          if (item.replaceValue === '{{random}}') {
+            replace = item.replaceValue
+            newValue = nonceLib()
+          } else {
+            replace = '{{' + item.replaceValue + '}}'
+            newValue = _.get(param, item.replaceValue)
+          }
+
           var regex = new RegExp(replace, 'g')
 
-          _.set(param, item.propertyName, _.get(param, item.propertyName).replace(regex, _.get(param, item.replaceValue)))
+          //_.set(param, item.propertyName, _.get(param, item.propertyName).replace(regex, _.get(param, item.replaceValue)))
+          _.set(param, item.propertyName, _.get(param, item.propertyName).replace(regex, newValue))
         } else {
           _.set(param, item.propertyName, _.get(param, item.replaceValue))
         }
