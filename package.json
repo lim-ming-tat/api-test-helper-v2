@@ -1,6 +1,6 @@
 {
   "name": "api-test-helper-v2",
-  "version": "2.6.6",
+  "version": "2.6.7",
   "description": "Helper Library to test API",
   "main": "index.js",
   "directories": {
@@ -25,19 +25,19 @@
   "homepage": "https://github.com/lim-ming-tat/api-test-helper-v2#readme",
   "dependencies": {
     "bluebird": "^3.7.2",
-    "isvalid": "^2.7.12",
-    "lodash": "^4.17.15",
-    "luxon": "^1.23.0",
+    "isvalid": "^2.7.15",
+    "lodash": "^4.17.20",
+    "luxon": "^1.25.0",
     "node-apex-api-security": "github:GovTechSG/node-apex-api-security",
     "node-jose": "^1.1.4",
     "node-json-color-stringify": "^1.1.0",
-    "superagent": "^5.2.2"
+    "superagent": "^5.3.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "mocha": "^7.1.1",
-    "nyc": "^15.0.1",
+    "mocha": "^7.2.0",
+    "nyc": "^15.1.0",
     "standard": "^14.3.4"
   },
   "standard": {
