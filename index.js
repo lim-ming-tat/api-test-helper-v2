@@ -35,6 +35,16 @@ function nonceLib () {
   return crypto.randomBytes(32).toString('base64')
 }
 
+function randomId(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+ }
+
 util.invokeRequest = (param) => {
   return new Promise(function (resolve, reject) {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1'
@@ -488,7 +498,12 @@ function applyReplaceMaps (param) {
 
           if (item.replaceValue === '{{random}}') {
             replace = item.replaceValue
-            newValue = nonceLib()
+            // newValue = nonceLib()
+            var length = 20
+            if (item.length != undefined && ! isNaN(item.length)) {
+                length = item.length
+            }
+            newValue = randomId(length)
           } else {
             replace = '{{' + item.replaceValue + '}}'
             newValue = _.get(param, item.replaceValue)
