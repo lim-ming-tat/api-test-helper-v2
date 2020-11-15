@@ -6,6 +6,7 @@ const mapsHelperLib = require('../../lib/mapsHelperLib')
 const { PropertyUndefinedError, DataPathUndefinedError } = require('../../lib/errors')
 
 const params = require('../resources/saveMapsTestData.json')
+const { expect } = require('chai')
 
 const expectedResult_cpf = {
   agencyName: 'CPF',
@@ -31,6 +32,180 @@ const expectedResult_hdb_p1 = {
   agencyName: 'HDB Project 1',
   businessKey: 'a8a8da4e-1a81-4870-b51a-836237aebaa0.awslab'
 }
+
+describe('custom error object tests', function () {
+    // throw new PropertyUndefinedError(dataFilter.notEqual.propertyName, item, dataFilter)
+    it('PropertyUndefinedError', function () {
+        var dataFilter = {
+            "propertyName" : "type",
+            "equal": "api"
+        }
+
+        try {
+            throw new PropertyUndefinedError("type", { "data": "value" }, dataFilter)
+        } catch (propertyUndefinedError) {
+            expect(propertyUndefinedError.details()).to.be.string
+            expect(propertyUndefinedError).to.respondTo('details')
+        }
+    })
+
+    //throw new DataPathUndefinedError(outputMap.dataPath, param, outputMap)
+    it('DataPathUndefinedError', function () {
+        var dataFilter = {
+            "propertyName" : "type",
+            "equal": "api"
+        }
+
+        try {
+            throw new DataPathUndefinedError("type", { "data": "value" }, dataFilter)
+        } catch (dataPathUndefinedError) {
+            expect(dataPathUndefinedError.details()).to.be.string
+            expect(dataPathUndefinedError).to.respondTo('details')
+        }
+    })
+})
+
+describe('dataFilterV2 tests', function () {
+    var dataV2 = {
+        "title": "You have been invited to be an API Administrator by CPF Agency Admin",
+        "guid": "group_member_req10083.gcc",
+        "wfState": "com.soa.group.membership.state.approved",
+        "name": "[CPF-PVT] SLACreateNewCaseCRMS:Services",
+        "type": "api",
+        "count": 10
+    }
+
+    it('dataFilterV2 - equal as string', function () {
+        var dataFilter = {
+            "propertyName" : "type",
+            "equal": "api"
+        }
+
+        var result = mapsHelperLib.filterData(dataV2, dataFilter)
+
+        expect(result)
+            .to.be.an('object')
+            .that.has.keys('title', 'guid', 'wfState', 'name', 'type', 'count')
+    })
+
+    it('dataFilterV2 - notEqual as string', function () {
+        var dataFilter = {
+            "propertyName" : "type",
+            "notEqual": "api"
+        }
+
+        var result = mapsHelperLib.filterData(dataV2, dataFilter)
+
+        expect(result)
+            .to.be.undefined
+    })
+
+    it('dataFilterV2 - greaterThan as number', function () {
+        var dataFilter = {
+            "propertyName" : "count",
+            "greaterThan": 5
+        }
+
+        var result = mapsHelperLib.filterData(dataV2, dataFilter)
+
+        expect(result)
+            .to.be.an('object')
+            .that.has.keys('title', 'guid', 'wfState', 'name', 'type', 'count')
+    })
+
+    it('dataFilterV2 - invalid conditions datatype, must be string', function () {
+        var dataFilter = {
+            "conditions" : { },
+            "filters": [ ]
+        }
+
+        expect(mapsHelperLib.filterData.bind(mapsHelperLib.filterData, dataV2, dataFilter))
+            .to.throw('Invalid datatype for dataFilter.conditions, expecting string datatype.')
+    })
+
+    it('dataFilterV2 - invalid conditions value, must be "and" or "or"', function () {
+        var dataFilter = {
+            "conditions" : "invalid",
+            "filters": [ ]
+        }
+
+        expect(mapsHelperLib.filterData.bind(mapsHelperLib.filterData, dataV2, dataFilter))
+            .to.throw('Invalid data value for dataFilter.conditions, expecting "and" or "or".')
+    })
+
+    it('dataFilterV2 - invalid filters datatype, must be array', function () {
+        var dataFilter = {
+            "conditions" : "or",
+            "filters": { }
+        }
+
+        expect(mapsHelperLib.filterData.bind(mapsHelperLib.filterData, dataV2, dataFilter))
+            .to.throw('Invalid datatype for dataFilter.filters, expecting array datatype.')
+    })
+
+    it('dataFilterV2 - conditions "and"', function () {
+        var dataFilter = {
+            "conditions": "and",
+            "filters": [
+                {
+                    "propertyName" : "type",
+                    "equal": "api"
+                },
+                {
+                    "propertyName" : "wfState",
+                    "equal": "com.soa.group.membership.state.approved"
+                }
+            ]
+        }
+
+        var result = mapsHelperLib.filterData(dataV2, dataFilter)
+
+        expect(result)
+            .to.be.an('object')
+            .that.has.keys('title', 'guid', 'wfState', 'name', 'type', 'count')
+    })
+
+    it('dataFilterV2 - conditions "and" with short circuit', function () {
+        var dataFilter = {
+            "conditions": "and",
+            "filters": [
+                {
+                    "propertyName" : "type",
+                    "equal": "apx"
+                },
+                {
+                    "propertyName" : "wfState",
+                    "equal": "com.soa.group.membership.state.approved"
+                }
+            ]
+        }
+
+        expect(mapsHelperLib.filterData(dataV2, dataFilter))
+            .to.be.undefined
+    })
+
+    it('dataFilterV2 - conditions "or"', function () {
+        var dataFilter = {
+            "conditions": "or",
+            "filters": [
+                {
+                    "propertyName" : "type",
+                    "equal": "apx"
+                },
+                {
+                    "propertyName" : "wfState",
+                    "equal": "com.soa.group.membership.state.approved"
+                }
+            ]
+        }
+
+        var result = mapsHelperLib.filterData(dataV2, dataFilter)
+
+        expect(result)
+            .to.be.an('object')
+            .that.has.keys('title', 'guid', 'wfState', 'name', 'type', 'count')
+    })
+})
 
 describe('dataFilter tests', function () {
   it('dataFilter - baseline, no data filter apply', function () {
@@ -582,6 +757,29 @@ describe('saveMaps Tests', function () {
     expect(param.sessionData.initNumber)
       .to.be.an('number')
       .to.equal(0)
+  })
+
+  it('saveMaps - remove existing property by setting the value to undefined', function () {
+    var param = {
+      sessionData: {
+        removeProperty: 'Some Value'
+      },
+
+      saveMaps: []
+    }
+
+    param.saveMaps.push(
+      {
+        sessionName: 'removeProperty',
+        dataType: 'undefined'
+      }
+    )
+
+    mapsHelperLib.applySaveMaps(param)
+    // console.log(JSON.stringify(param, null, 4))
+
+    expect(param.sessionData.removeProperty)
+      .to.be.undefined
   })
 
   it('saveMaps - initialize variable - string with invalid dataType', function () {
