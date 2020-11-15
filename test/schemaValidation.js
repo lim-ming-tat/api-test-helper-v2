@@ -1,10 +1,10 @@
 ' use strict'
 
-const promise = require('bluebird');
+const promise = require('bluebird')
 
 // https://www.npmjs.com/package/isvalid
 // npm i isvalid --save
-const isvalid = require('isvalid');
+const isvalid = require('isvalid')
 
 // https://regex101.com/r/nG7kA7/1
 // /^((?:(https?):\/\/)(?:((\w+):(\w+))@)?((?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9][0-9]|[0-9])\.(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9][0-9]|[0-9])\.)(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9][0-9]|[0-9])\.)(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9][0-9]|[0-9]))|(?:(?:(?:[\w-]+\.){1,2}[\w]{2,3})))(?::(\d+))?((?:\/[\w-]+)*)(?:\/|(\/[\w]+\.[\w]{3,4})|(\?(?:([\w]+=[\w]+)&)*([\w]+=[\w]+))?|\?(?:(wsdl|wadl))))$/
@@ -32,82 +32,81 @@ https://ww-w.example.com:8080/api/v1/rest/level0/ex-ex
 https://ww-w.exa-mple.comx:8080/api/v1/rest/level0/ex-ex
 */
 
-var param_schema0 = {
-    type: Object
-    , schema: {
-        invokeUrl: {
-            type: String
-            , required: true
-            , match: /^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/
-            , len: '-2048'
-        }
-        , id: {
-            type: String
-            , required: false
-            , len: "10"
-        }
-        , description: {
-            type: String
-            , required: false
-        }
-        , httpMethod: {
-            type: String
-            , required: false
-            , enum: [ 'GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH' ]
-        }
+var paramSchema0 = {
+  type: Object,
+  schema: {
+    invokeUrl: {
+      type: String,
+      required: true,
+      match: /^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
+      len: '-2048'
+    },
+    id: {
+      type: String,
+      required: false,
+      len: '10'
+    },
+    description: {
+      type: String,
+      required: false
+    },
+    httpMethod: {
+      type: String,
+      required: false,
+      enum: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH']
+    },
 
-        , message: {
-            type: String
-            , required: false
-        }
+    message: {
+      type: String,
+      required: false
     }
+  }
 }
 
-var test_array = [
-    {  }
-     , { invokeUrl: true }
-    // , { invokeUrl: "true" }
-    // , { invokeUrl: "http://www.example.com" }
-    // , { invokeUrl: "www.example.com" }
-    // , { invokeUrl: "example.com" }
-    // , { invokeUrl: "http://www.site.com:8008?param1=value&param2=value" }
-    // , { invokeUrl: "sftp://invalid.com/perl.cgi?key=" }
-    , { invokeUrl: "https://www.example.com", httpMethod: "GET", id: "0123456789" }
+var testArray = [
+  { },
+  { invokeUrl: true },
+  // , { invokeUrl: "true" }
+  // , { invokeUrl: "http://www.example.com" }
+  // , { invokeUrl: "www.example.com" }
+  // , { invokeUrl: "example.com" }
+  // , { invokeUrl: "http://www.site.com:8008?param1=value&param2=value" }
+  // , { invokeUrl: "sftp://invalid.com/perl.cgi?key=" }
+  { invokeUrl: 'https://www.example.com', httpMethod: 'GET', id: '0123456789' }
 ]
 
-var param_schema1 = {
-    type: Object
-    , schema: {
-        invokeUrl: {
-            type: String
-            , required: [ true, "Property 'invokeUrl' is required." ] 
-            , match: [ /^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/, "Invalid URL 'invokeUrl'."]
-            , len: '-2018'
-            , errors: {
-                type: "Property 'invokeUrl' is not of type 'String'."
-            }
-        }
-        , message: {
-            type: String
-            , required: false
-        }
+var paramSchema1 = {
+  type: Object,
+  schema: {
+    invokeUrl: {
+      type: String,
+      required: [true, "Property 'invokeUrl' is required."],
+      match: [/^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/, "Invalid URL 'invokeUrl'."],
+      len: '-2018',
+      errors: {
+        type: "Property 'invokeUrl' is not of type 'String'."
+      }
+    },
+    message: {
+      type: String,
+      required: false
     }
+  }
 }
 
-return promise.mapSeries(test_array, (test_data) => {
-    return isvalid( test_data, param_schema0)
+promise.mapSeries(testArray, (testData) => {
+  return isvalid(testData, paramSchema0)
     .then((data) => {
-        // Data was validated and valid data is available.
-        console.log(data)
-        
+      // Data was validated and valid data is available.
+      console.log(data)
     }).catch((err) => {
-        // A validation error occurred.
-        // if (err.message = param_schema.message) 
-        //     console.log("Passed...")
-        // else
-        //     console.log(err.stack)
-        
-        //console.log(JSON.stringify(err, null, 4))
-        console.log(`Property ${err.validator} validation. Property '${err.keyPath.join(" ")}' - ${err.message}`)
-    });
+      // A validation error occurred.
+      // if (err.message = param_schema.message)
+      //     console.log("Passed...")
+      // else
+      //     console.log(err.stack)
+
+      // console.log(JSON.stringify(err, null, 4))
+      console.log(`Property ${err.validator} validation. Property '${err.keyPath.join(' ')}' - ${err.message}`)
+    })
 })

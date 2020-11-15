@@ -8,203 +8,203 @@ const { PropertyUndefinedError, DataPathUndefinedError } = require('../../lib/er
 const params = require('../resources/saveMapsTestData.json')
 const { expect } = require('chai')
 
-const expectedResult_cpf = {
+const expectedResultCpf = {
   agencyName: 'CPF',
   businessKey: 'c153a3dc-e537-4541-b96f-c493c453b02a.awslab'
 }
 
-const expectedResult_cpf_p1 = {
+const expectedResultCpfP1 = {
   agencyName: 'CPF Project 1',
   businessKey: '64921f2a-32fb-40d6-aa5a-9b8eb214d5a1.awslab'
 }
 
-const expectedResult_cpf_p2 = {
+const expectedResultCpfP2 = {
   agencyName: 'CPF Project 2',
   businessKey: '54f9bc10-36a2-4d6d-8882-470cfde822bb.awslab'
 }
 
-const expectedResult_hdb = {
+const expectedResultHdb = {
   agencyName: 'HDB',
   businessKey: '489c0be5-995c-444c-97e9-78f3324d67e1.awslab'
 }
 
-const expectedResult_hdb_p1 = {
+const expectedResultHdbP1 = {
   agencyName: 'HDB Project 1',
   businessKey: 'a8a8da4e-1a81-4870-b51a-836237aebaa0.awslab'
 }
 
 describe('custom error object tests', function () {
-    // throw new PropertyUndefinedError(dataFilter.notEqual.propertyName, item, dataFilter)
-    it('PropertyUndefinedError', function () {
-        var dataFilter = {
-            "propertyName" : "type",
-            "equal": "api"
-        }
+  // throw new PropertyUndefinedError(dataFilter.notEqual.propertyName, item, dataFilter)
+  it('PropertyUndefinedError', function () {
+    var dataFilter = {
+      propertyName: 'type',
+      equal: 'api'
+    }
 
-        try {
-            throw new PropertyUndefinedError("type", { "data": "value" }, dataFilter)
-        } catch (propertyUndefinedError) {
-            expect(propertyUndefinedError.details()).to.be.string
-            expect(propertyUndefinedError).to.respondTo('details')
-        }
-    })
+    try {
+      throw new PropertyUndefinedError('type', { data: 'value' }, dataFilter)
+    } catch (propertyUndefinedError) {
+      expect(propertyUndefinedError.details()).to.be.string
+      expect(propertyUndefinedError).to.respondTo('details')
+    }
+  })
 
-    //throw new DataPathUndefinedError(outputMap.dataPath, param, outputMap)
-    it('DataPathUndefinedError', function () {
-        var dataFilter = {
-            "propertyName" : "type",
-            "equal": "api"
-        }
+  // throw new DataPathUndefinedError(outputMap.dataPath, param, outputMap)
+  it('DataPathUndefinedError', function () {
+    var dataFilter = {
+      propertyName: 'type',
+      equal: 'api'
+    }
 
-        try {
-            throw new DataPathUndefinedError("type", { "data": "value" }, dataFilter)
-        } catch (dataPathUndefinedError) {
-            expect(dataPathUndefinedError.details()).to.be.string
-            expect(dataPathUndefinedError).to.respondTo('details')
-        }
-    })
+    try {
+      throw new DataPathUndefinedError('type', { data: 'value' }, dataFilter)
+    } catch (dataPathUndefinedError) {
+      expect(dataPathUndefinedError.details()).to.be.string
+      expect(dataPathUndefinedError).to.respondTo('details')
+    }
+  })
 })
 
 describe('dataFilterV2 tests', function () {
-    var dataV2 = {
-        "title": "You have been invited to be an API Administrator by CPF Agency Admin",
-        "guid": "group_member_req10083.gcc",
-        "wfState": "com.soa.group.membership.state.approved",
-        "name": "[CPF-PVT] SLACreateNewCaseCRMS:Services",
-        "type": "api",
-        "count": 10
+  var dataV2 = {
+    title: 'You have been invited to be an API Administrator by CPF Agency Admin',
+    guid: 'group_member_req10083.gcc',
+    wfState: 'com.soa.group.membership.state.approved',
+    name: '[CPF-PVT] SLACreateNewCaseCRMS:Services',
+    type: 'api',
+    count: 10
+  }
+
+  it('dataFilterV2 - equal as string', function () {
+    var dataFilter = {
+      propertyName: 'type',
+      equal: 'api'
     }
 
-    it('dataFilterV2 - equal as string', function () {
-        var dataFilter = {
-            "propertyName" : "type",
-            "equal": "api"
+    var result = mapsHelperLib.filterData(dataV2, dataFilter)
+
+    expect(result)
+      .to.be.an('object')
+      .that.has.keys('title', 'guid', 'wfState', 'name', 'type', 'count')
+  })
+
+  it('dataFilterV2 - notEqual as string', function () {
+    var dataFilter = {
+      propertyName: 'type',
+      notEqual: 'api'
+    }
+
+    var result = mapsHelperLib.filterData(dataV2, dataFilter)
+
+    expect(result)
+      .to.be.undefined
+  })
+
+  it('dataFilterV2 - greaterThan as number', function () {
+    var dataFilter = {
+      propertyName: 'count',
+      greaterThan: 5
+    }
+
+    var result = mapsHelperLib.filterData(dataV2, dataFilter)
+
+    expect(result)
+      .to.be.an('object')
+      .that.has.keys('title', 'guid', 'wfState', 'name', 'type', 'count')
+  })
+
+  it('dataFilterV2 - invalid conditions datatype, must be string', function () {
+    var dataFilter = {
+      conditions: { },
+      filters: []
+    }
+
+    expect(mapsHelperLib.filterData.bind(mapsHelperLib.filterData, dataV2, dataFilter))
+      .to.throw('Invalid datatype for dataFilter.conditions, expecting string datatype.')
+  })
+
+  it('dataFilterV2 - invalid conditions value, must be "and" or "or"', function () {
+    var dataFilter = {
+      conditions: 'invalid',
+      filters: []
+    }
+
+    expect(mapsHelperLib.filterData.bind(mapsHelperLib.filterData, dataV2, dataFilter))
+      .to.throw('Invalid data value for dataFilter.conditions, expecting "and" or "or".')
+  })
+
+  it('dataFilterV2 - invalid filters datatype, must be array', function () {
+    var dataFilter = {
+      conditions: 'or',
+      filters: { }
+    }
+
+    expect(mapsHelperLib.filterData.bind(mapsHelperLib.filterData, dataV2, dataFilter))
+      .to.throw('Invalid datatype for dataFilter.filters, expecting array datatype.')
+  })
+
+  it('dataFilterV2 - conditions "and"', function () {
+    var dataFilter = {
+      conditions: 'and',
+      filters: [
+        {
+          propertyName: 'type',
+          equal: 'api'
+        },
+        {
+          propertyName: 'wfState',
+          equal: 'com.soa.group.membership.state.approved'
         }
+      ]
+    }
 
-        var result = mapsHelperLib.filterData(dataV2, dataFilter)
+    var result = mapsHelperLib.filterData(dataV2, dataFilter)
 
-        expect(result)
-            .to.be.an('object')
-            .that.has.keys('title', 'guid', 'wfState', 'name', 'type', 'count')
-    })
+    expect(result)
+      .to.be.an('object')
+      .that.has.keys('title', 'guid', 'wfState', 'name', 'type', 'count')
+  })
 
-    it('dataFilterV2 - notEqual as string', function () {
-        var dataFilter = {
-            "propertyName" : "type",
-            "notEqual": "api"
+  it('dataFilterV2 - conditions "and" with short circuit', function () {
+    var dataFilter = {
+      conditions: 'and',
+      filters: [
+        {
+          propertyName: 'type',
+          equal: 'apx'
+        },
+        {
+          propertyName: 'wfState',
+          equal: 'com.soa.group.membership.state.approved'
         }
+      ]
+    }
 
-        var result = mapsHelperLib.filterData(dataV2, dataFilter)
+    expect(mapsHelperLib.filterData(dataV2, dataFilter))
+      .to.be.undefined
+  })
 
-        expect(result)
-            .to.be.undefined
-    })
-
-    it('dataFilterV2 - greaterThan as number', function () {
-        var dataFilter = {
-            "propertyName" : "count",
-            "greaterThan": 5
+  it('dataFilterV2 - conditions "or"', function () {
+    var dataFilter = {
+      conditions: 'or',
+      filters: [
+        {
+          propertyName: 'type',
+          equal: 'apx'
+        },
+        {
+          propertyName: 'wfState',
+          equal: 'com.soa.group.membership.state.approved'
         }
+      ]
+    }
 
-        var result = mapsHelperLib.filterData(dataV2, dataFilter)
+    var result = mapsHelperLib.filterData(dataV2, dataFilter)
 
-        expect(result)
-            .to.be.an('object')
-            .that.has.keys('title', 'guid', 'wfState', 'name', 'type', 'count')
-    })
-
-    it('dataFilterV2 - invalid conditions datatype, must be string', function () {
-        var dataFilter = {
-            "conditions" : { },
-            "filters": [ ]
-        }
-
-        expect(mapsHelperLib.filterData.bind(mapsHelperLib.filterData, dataV2, dataFilter))
-            .to.throw('Invalid datatype for dataFilter.conditions, expecting string datatype.')
-    })
-
-    it('dataFilterV2 - invalid conditions value, must be "and" or "or"', function () {
-        var dataFilter = {
-            "conditions" : "invalid",
-            "filters": [ ]
-        }
-
-        expect(mapsHelperLib.filterData.bind(mapsHelperLib.filterData, dataV2, dataFilter))
-            .to.throw('Invalid data value for dataFilter.conditions, expecting "and" or "or".')
-    })
-
-    it('dataFilterV2 - invalid filters datatype, must be array', function () {
-        var dataFilter = {
-            "conditions" : "or",
-            "filters": { }
-        }
-
-        expect(mapsHelperLib.filterData.bind(mapsHelperLib.filterData, dataV2, dataFilter))
-            .to.throw('Invalid datatype for dataFilter.filters, expecting array datatype.')
-    })
-
-    it('dataFilterV2 - conditions "and"', function () {
-        var dataFilter = {
-            "conditions": "and",
-            "filters": [
-                {
-                    "propertyName" : "type",
-                    "equal": "api"
-                },
-                {
-                    "propertyName" : "wfState",
-                    "equal": "com.soa.group.membership.state.approved"
-                }
-            ]
-        }
-
-        var result = mapsHelperLib.filterData(dataV2, dataFilter)
-
-        expect(result)
-            .to.be.an('object')
-            .that.has.keys('title', 'guid', 'wfState', 'name', 'type', 'count')
-    })
-
-    it('dataFilterV2 - conditions "and" with short circuit', function () {
-        var dataFilter = {
-            "conditions": "and",
-            "filters": [
-                {
-                    "propertyName" : "type",
-                    "equal": "apx"
-                },
-                {
-                    "propertyName" : "wfState",
-                    "equal": "com.soa.group.membership.state.approved"
-                }
-            ]
-        }
-
-        expect(mapsHelperLib.filterData(dataV2, dataFilter))
-            .to.be.undefined
-    })
-
-    it('dataFilterV2 - conditions "or"', function () {
-        var dataFilter = {
-            "conditions": "or",
-            "filters": [
-                {
-                    "propertyName" : "type",
-                    "equal": "apx"
-                },
-                {
-                    "propertyName" : "wfState",
-                    "equal": "com.soa.group.membership.state.approved"
-                }
-            ]
-        }
-
-        var result = mapsHelperLib.filterData(dataV2, dataFilter)
-
-        expect(result)
-            .to.be.an('object')
-            .that.has.keys('title', 'guid', 'wfState', 'name', 'type', 'count')
-    })
+    expect(result)
+      .to.be.an('object')
+      .that.has.keys('title', 'guid', 'wfState', 'name', 'type', 'count')
+  })
 })
 
 describe('dataFilter tests', function () {
@@ -220,17 +220,17 @@ describe('dataFilter tests', function () {
       .to.have.lengthOf(agenciesFound)
 
     // agencyName and businessKey must match
-    const hdb_index = 1
-    expect(param.sessionData.agencyList[hdb_index])
+    const hdbIndex = 1
+    expect(param.sessionData.agencyList[hdbIndex])
       .to.be.an('object')
       .that.has.all.keys('agencyName', 'businessKey')
-      .to.include(expectedResult_hdb)
+      .to.include(expectedResultHdb)
 
-    const cpf_index = 5
-    expect(param.sessionData.agencyList[cpf_index])
+    const cpfIndex = 5
+    expect(param.sessionData.agencyList[cpfIndex])
       .to.be.an('object')
       .that.has.all.keys('agencyName', 'businessKey')
-      .to.include(expectedResult_cpf)
+      .to.include(expectedResultCpf)
   })
 
   it('dataFilter - agencyName startWith cpf (case in-censitive search)', function () {
@@ -250,16 +250,16 @@ describe('dataFilter tests', function () {
       .to.have.lengthOf(agenciesFound)
 
     // agencyName and businessKey must match
-    const cpf_index = 0
-    expect(param.sessionData.agencyList[cpf_index])
+    const cpfIndex = 0
+    expect(param.sessionData.agencyList[cpfIndex])
       .to.be.an('object')
       .that.has.all.keys('agencyName', 'businessKey')
-      .to.include(expectedResult_cpf)
-    const cpf_p1_index = 1
-    expect(param.sessionData.agencyList[cpf_p1_index])
+      .to.include(expectedResultCpf)
+    const cpfP1Index = 1
+    expect(param.sessionData.agencyList[cpfP1Index])
       .to.be.an('object')
       .that.has.all.keys('agencyName', 'businessKey')
-      .to.include(expectedResult_cpf_p1)
+      .to.include(expectedResultCpfP1)
   })
 
   it('dataFilter - agencyName startWith cpf or hdb (case in-censitive search)', function () {
@@ -278,16 +278,16 @@ describe('dataFilter tests', function () {
       .to.be.an('array')
       .to.have.lengthOf(agenciesFound)
 
-    const cpf_index = 4
-    expect(param.sessionData.agencyList[cpf_index])
+    const cpfIndex = 4
+    expect(param.sessionData.agencyList[cpfIndex])
       .to.be.an('object')
       .that.has.all.keys('agencyName', 'businessKey')
-      .to.include(expectedResult_cpf)
-    const cpf_p1_index = 5
-    expect(param.sessionData.agencyList[cpf_p1_index])
+      .to.include(expectedResultCpf)
+    const cpfP1Index = 5
+    expect(param.sessionData.agencyList[cpfP1Index])
       .to.be.an('object')
       .that.has.all.keys('agencyName', 'businessKey')
-      .to.include(expectedResult_cpf_p1)
+      .to.include(expectedResultCpfP1)
   })
 
   it('dataFilter - activeVersion == version', function () {
@@ -309,11 +309,11 @@ describe('dataFilter tests', function () {
       .to.have.lengthOf(agenciesFound)
 
     // agencyName and businessKey must match
-    const cpf_p1_index = 2
-    expect(param.sessionData.agencyList[cpf_p1_index])
+    const cpfP1Index = 2
+    expect(param.sessionData.agencyList[cpfP1Index])
       .to.be.an('object')
       .that.has.all.keys('agencyName', 'businessKey')
-      .to.include(expectedResult_cpf_p1)
+      .to.include(expectedResultCpfP1)
   })
 
   it('dataFilter - activeVersion == 3', function () {
@@ -335,11 +335,11 @@ describe('dataFilter tests', function () {
       .to.have.lengthOf(agenciesFound)
 
     // agencyName and businessKey must match
-    const hdb_p1_index = 0
-    expect(param.sessionData.agencyList[hdb_p1_index])
+    const hdbP1Index = 0
+    expect(param.sessionData.agencyList[hdbP1Index])
       .to.be.an('object')
       .that.has.all.keys('agencyName', 'businessKey')
-      .to.include(expectedResult_hdb_p1)
+      .to.include(expectedResultHdbP1)
   })
 
   it('dataFilter - activeVersion != version', function () {
@@ -361,11 +361,11 @@ describe('dataFilter tests', function () {
       .to.have.lengthOf(agenciesFound)
 
     // agencyName and businessKey must match
-    const cpf_p2_index = 4
-    expect(param.sessionData.agencyList[cpf_p2_index])
+    const cpfP2Index = 4
+    expect(param.sessionData.agencyList[cpfP2Index])
       .to.be.an('object')
       .that.has.all.keys('agencyName', 'businessKey')
-      .to.include(expectedResult_cpf_p2)
+      .to.include(expectedResultCpfP2)
   })
 
   it('dataFilter - activeVersion != 3', function () {
@@ -387,11 +387,11 @@ describe('dataFilter tests', function () {
       .to.have.lengthOf(agenciesFound)
 
     // agencyName and businessKey must match
-    const cpf_index = 3
-    expect(param.sessionData.agencyList[cpf_index])
+    const cpfIndex = 3
+    expect(param.sessionData.agencyList[cpfIndex])
       .to.be.an('object')
       .that.has.all.keys('agencyName', 'businessKey')
-      .to.include(expectedResult_cpf)
+      .to.include(expectedResultCpf)
   })
 
   it('dataFilter - version > activeVersion', function () {
@@ -414,11 +414,11 @@ describe('dataFilter tests', function () {
       .to.have.lengthOf(agenciesFound)
 
     // agencyName and businessKey must match
-    const cpf_p2_index = 4
-    expect(param.sessionData.agencyList[cpf_p2_index])
+    const cpfP2Index = 4
+    expect(param.sessionData.agencyList[cpfP2Index])
       .to.be.an('object')
       .that.has.all.keys('agencyName', 'businessKey')
-      .to.include(expectedResult_cpf_p2)
+      .to.include(expectedResultCpfP2)
   })
 
   it('dataFilter - version > 4', function () {

@@ -9,11 +9,11 @@ const { URL } = require('url')
 
 const _ = require('lodash')
 
-require('node-json-color-stringify');
+require('node-json-color-stringify')
 
 const apex = require('node-apex-api-security').ApiSigningUtil
 const mapsHelperLib = require('./lib/mapsHelperLib')
-const { PropertyUndefinedError } = require('./lib/errors')
+// const { PropertyUndefinedError } = require('./lib/errors')
 
 // const dateFormat = require('./timestamp').dateFormat;
 const { DateTime } = require('luxon')
@@ -21,9 +21,9 @@ const { DateTime } = require('luxon')
 // escape regular expression character
 // credit: https://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
 RegExp.escape = function (s) {
-    return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+  return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
 }
-  
+
 var totalTest = 0
 var passedTest = 0
 var skipTest = 0
@@ -35,15 +35,15 @@ function nonceLib () {
   return crypto.randomBytes(32).toString('base64')
 }
 
-function randomId(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-       result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
- }
+function randomId (length) {
+  var result = ''
+  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  var charactersLength = characters.length
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength))
+  }
+  return result
+}
 
 util.invokeRequest = (param) => {
   return new Promise(function (resolve, reject) {
@@ -166,22 +166,22 @@ util.invokeRequest = (param) => {
     var tempReq = JSON.parse(JSON.stringify(req))
 
     // format request data into json
-    if (tempReq.data != undefined && tempReq.headers["content-type"] == "application/json") {
-        tempReq.data = JSON.parse(tempReq.data)
+    if (tempReq.data != undefined && tempReq.headers['content-type'] == 'application/json') {
+      tempReq.data = JSON.parse(tempReq.data)
     }
 
     // replace sensitive datat with ***
     tempReq = JSON.parse(JSON.stringify(tempReq, (key, value) => {
-        if (key === 'password') {
-          return "***"
-        } else if (key === 'cookie') {
-          return "***"
-        } else if (key.startsWith('x-csrf-token_')) {
-            return "***"
-        }
-      
-        return value;
-      }))
+      if (key === 'password') {
+        return '***'
+      } else if (key === 'cookie') {
+        return '***'
+      } else if (key.startsWith('x-csrf-token_')) {
+        return '***'
+      }
+
+      return value
+    }))
 
     param.requestParam = tempReq
 
@@ -253,14 +253,14 @@ util.performTestRecursive = (params) => {
     for (var i = 0; i < parallel; i++) {
       var newItem = JSON.parse(itemJson)
 
-    //   if (newItem.queryString == undefined) newItem.queryString = {}
-      if (newItem.httpHeaders == undefined) newItem.httpHeaders = { "X-Correlation-ID" : undefined }
+      //   if (newItem.queryString == undefined) newItem.queryString = {}
+      if (newItem.httpHeaders == undefined) newItem.httpHeaders = { 'X-Correlation-ID': undefined }
 
       newItem.id += ' parallel=' + i
-    //   newItem.queryString.llid = require('uuid/v1')().substring(0, 8)
-    //   newItem.description += ' llid=' + newItem.queryString.llid
-      newItem.httpHeaders["X-Correlation-ID"] = require('uuid/v1')().substring(0, 8)
-      newItem.description += ' llid=' + newItem.httpHeaders["X-Correlation-ID"]
+      //   newItem.queryString.llid = require('uuid/v1')().substring(0, 8)
+      //   newItem.description += ' llid=' + newItem.queryString.llid
+      newItem.httpHeaders['X-Correlation-ID'] = require('uuid/v1')().substring(0, 8)
+      newItem.description += ' llid=' + newItem.httpHeaders['X-Correlation-ID']
 
       functionArray.push(util.performTestRecursive(newItem))
     }
@@ -273,16 +273,16 @@ util.performTestRecursive = (params) => {
       item.repeats = undefined
 
       // assign uuid to first item
-    //   if (item.queryString == undefined) item.queryString = {}
-      if (item.httpHeaders == undefined) item.httpHeaders = { "X-Correlation-ID" : undefined }
+      //   if (item.queryString == undefined) item.queryString = {}
+      if (item.httpHeaders == undefined) item.httpHeaders = { 'X-Correlation-ID': undefined }
 
       var stringCopy = JSON.stringify(item)
 
       item.id += ' repeat=1'
-    //   item.queryString.uuid = require('uuid/v1')().substring(0, 8)
-    //   item.description += ' uuid=' + item.queryString.uuid
-      item.httpHeaders["X-Correlation-ID"] = require('uuid/v1')().substring(0, 8)
-      item.description += ' uuid=' + item.httpHeaders["X-Correlation-ID"]
+      //   item.queryString.uuid = require('uuid/v1')().substring(0, 8)
+      //   item.description += ' uuid=' + item.queryString.uuid
+      item.httpHeaders['X-Correlation-ID'] = require('uuid/v1')().substring(0, 8)
+      item.description += ' uuid=' + item.httpHeaders['X-Correlation-ID']
 
       var repeatedParam = ''
       if (repeats == 0) {
@@ -298,8 +298,8 @@ util.performTestRecursive = (params) => {
       _.forEach(repeatedParam, function (param) {
         param.id += ' repeat=' + ++repeatCounter
         // param.queryString.uuid = require('uuid/v1')().substring(0, 8); param.description += ' uuid=' + param.queryString.uuid
-        param.httpHeaders["X-Correlation-ID"] = require('uuid/v1')().substring(0, 8)
-        param.description += ' uuid=' + param.httpHeaders["X-Correlation-ID"]
+        param.httpHeaders['X-Correlation-ID'] = require('uuid/v1')().substring(0, 8)
+        param.description += ' uuid=' + param.httpHeaders['X-Correlation-ID']
       })
 
       newParams = _.concat(repeatedParam, newParams)
@@ -438,24 +438,24 @@ util.displaySessionData = () => {
   return Promise.resolve(formatSessionData(defaultParam))
 }
 
-function formatSessionData(param) {
-    return JSON.colorStringify(param.sessionData, (key, value) => {
-        if (key === 'password') {
-          return "***"
-        } else if (key === 'cmPassword') {
-            return "***"
-        } else if (key === 'pmPassword') {
-            return "***"
-        } else if (key === 'token') {
-            return "***"
-        } else if (key === 'cookie') {
-          return "***"
-        } else if (key.startsWith('x-csrf-token_')) {
-            return "***"
-        }
-      
-        return value;
-      }, 4)
+function formatSessionData (param) {
+  return JSON.colorStringify(param.sessionData, (key, value) => {
+    if (key === 'password') {
+      return '***'
+    } else if (key === 'cmPassword') {
+      return '***'
+    } else if (key === 'pmPassword') {
+      return '***'
+    } else if (key === 'token') {
+      return '***'
+    } else if (key === 'cookie') {
+      return '***'
+    } else if (key.startsWith('x-csrf-token_')) {
+      return '***'
+    }
+
+    return value
+  }, 4)
 }
 
 function propagateDefaultValue (param) {
@@ -492,16 +492,16 @@ function applyReplaceMaps (param) {
       // if (item.propertyName != "skipTest") {
       if (!(item.propertyName == 'skipTest' || (item.preHttpRequest != undefined && item.preHttpRequest))) {
         if (typeof _.get(param, item.propertyName) === 'string') {
-          //var replace = '{{' + item.replaceValue + '}}'
-          var replace = ""
-          var newValue = ""
+          // var replace = '{{' + item.replaceValue + '}}'
+          var replace = ''
+          var newValue = ''
 
           if (item.replaceValue === '{{random}}') {
             replace = item.replaceValue
             // newValue = nonceLib()
             var length = 20
-            if (item.length != undefined && ! isNaN(item.length)) {
-                length = item.length
+            if (item.length != undefined && !isNaN(item.length)) {
+              length = item.length
             }
             newValue = randomId(length)
           } else {
@@ -511,7 +511,7 @@ function applyReplaceMaps (param) {
 
           var regex = new RegExp(replace, 'g')
 
-          //_.set(param, item.propertyName, _.get(param, item.propertyName).replace(regex, _.get(param, item.replaceValue)))
+          // _.set(param, item.propertyName, _.get(param, item.propertyName).replace(regex, _.get(param, item.replaceValue)))
           _.set(param, item.propertyName, _.get(param, item.propertyName).replace(regex, newValue))
         } else {
           _.set(param, item.propertyName, _.get(param, item.replaceValue))
@@ -758,7 +758,7 @@ util.executeTest = (param) => {
 
             // show the http request
             if (param.requestParam != undefined) {
-                message += '\n' + indentation + 'HTTP Request::: \n' + indentation + JSON.colorStringify(param.requestParam, null, 4).replace(/\n/g, '\n' + indentation) + '\n'
+              message += '\n' + indentation + 'HTTP Request::: \n' + indentation + JSON.colorStringify(param.requestParam, null, 4).replace(/\n/g, '\n' + indentation) + '\n'
             }
 
             message += `\n${indentation}URL::: ${setColor.warn(param.invokeUrl)}`
@@ -803,9 +803,9 @@ util.executeTest = (param) => {
         }
 
         if (param.debugSession) {
-            message += '\n' + indentation + 'Session Data::: \n' + indentation + formatSessionData(param).replace(/\n/g, '\n' + indentation) + '\n'
+          message += '\n' + indentation + 'Session Data::: \n' + indentation + formatSessionData(param).replace(/\n/g, '\n' + indentation) + '\n'
         }
-  
+
         // if (param.showElapseTime) console.log("\n" + getElapseTime(param.startTime, param.timespan));
         if (param.showElapseTime) {
           // console.log("\n" + getElapseTime(param.startTime, param.endTime));
@@ -944,7 +944,7 @@ for (var i = 0; i < funcNames.length; i++) {
 
 const utilx = require('util')
 var setColor = {}
-for (var i = 0; i < funcNames.length; i++) {
+for (let i = 0; i < funcNames.length; i++) {
   const funcName = funcNames[i]
   const color = colors[i]
 

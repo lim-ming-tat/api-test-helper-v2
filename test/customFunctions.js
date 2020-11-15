@@ -31,7 +31,7 @@ var localDebug = false
 
 helper.preHttpRequest = function (param, response) {
   var message = '\npreHttpRequest'
-  if (response == undefined) message += ' - Response undefined.'
+  if (response === undefined) message += ' - Response undefined.'
 
   if (localDebug) console.log(message)
 
@@ -40,7 +40,7 @@ helper.preHttpRequest = function (param, response) {
 
 helper.verifyHttpRequest = function (param, response) {
   var message = '\nverifyHttpRequest'
-  if (response == undefined) message += ' - Response undefined.'
+  if (response === undefined) message += ' - Response undefined.'
 
   if (localDebug) console.log(message)
 
@@ -49,7 +49,7 @@ helper.verifyHttpRequest = function (param, response) {
 
 helper.verifyHttpRequestFailed = function (param, response) {
   var message = '\nverifyHttpRequestFailed'
-  if (response == undefined) message += ' - Response undefined.'
+  if (response === undefined) message += ' - Response undefined.'
 
   if (localDebug) console.log(message)
 
@@ -58,9 +58,9 @@ helper.verifyHttpRequestFailed = function (param, response) {
 
 helper.postHttpRequest = function (param, response) {
   var message = '\npostHttpRequest'
-  if (response == undefined) message += ' - Response undefined.'
+  if (response === undefined) message += ' - Response undefined.'
 
-  if (response != undefined) {
+  if (response !== undefined) {
     if (localDebug) message += '\n' + JSON.stringify(response, null, 4)
   }
 
