@@ -205,6 +205,47 @@ describe('dataFilterV2 tests', function () {
       .to.be.an('object')
       .that.has.keys('title', 'guid', 'wfState', 'name', 'type', 'count')
   })
+
+  it('dataFilterV2 - hasProperty - property exists', function () {
+    var dataFilter = {
+      propertyName: 'title',
+      hasProperty: true
+    }
+
+    expect(mapsHelperLib.filterData(dataV2, dataFilter))
+      .to.be.an('object')
+      .that.has.keys('title', 'guid', 'wfState', 'name', 'type', 'count')
+  })
+
+  it('dataFilterV2 - hasProperty - property not exists', function () {
+    var dataFilter = {
+      propertyName: 'test',
+      hasProperty: false
+    }
+
+    expect(mapsHelperLib.filterData(dataV2, dataFilter))
+      .to.be.an('object')
+      .that.has.keys('title', 'guid', 'wfState', 'name', 'type', 'count')
+  })
+
+  it('dataFilterV2 - hasProperty - missing propertyName', function () {
+    var dataFilter = {
+      hasProperty: false
+    }
+
+    expect(mapsHelperLib.filterData.bind(mapsHelperLib.filterData, dataV2, dataFilter))
+      .to.throw(PropertyUndefinedError)
+      .with.property('propertyName', 'propertyName')
+  })
+
+  it('dataFilterV2 - hasProperty - invalid datatype', function () {
+    var dataFilter = {
+      hasProperty: {}
+    }
+
+    expect(mapsHelperLib.filterData.bind(mapsHelperLib.filterData, dataV2, dataFilter))
+      .to.throw('Invalid datatype for dataFilter.hasProperty, expecting boolean datatype.')
+  })
 })
 
 describe('dataFilter tests', function () {
@@ -231,6 +272,33 @@ describe('dataFilter tests', function () {
       .to.be.an('object')
       .that.has.all.keys('agencyName', 'businessKey')
       .to.include(expectedResultCpf)
+  })
+
+  it('dataFilter - propertyName missing for startWith or regex', function () {
+    var param = _.cloneDeep(params.param_dataFilter.param)
+
+    param.saveMaps[0].dataFilter = {
+      startsWith: 'test'
+    }
+
+    expect(mapsHelperLib.applySaveMaps.bind(mapsHelperLib.applySaveMaps, param))
+      .to.throw(PropertyUndefinedError)
+      .with.property('propertyName', 'propertyName')
+    // console.log(JSON.stringify(param.sessionData, null, 4))
+  })
+
+  it('dataFilter - invalid propertyName for startWith or regex', function () {
+    var param = _.cloneDeep(params.param_dataFilter.param)
+
+    param.saveMaps[0].dataFilter = {
+      propertyName: 'invalid',
+      startsWith: 'test'
+    }
+
+    expect(mapsHelperLib.applySaveMaps.bind(mapsHelperLib.applySaveMaps, param))
+      .to.throw(PropertyUndefinedError)
+      .with.property('propertyName', 'invalid')
+    // console.log(JSON.stringify(param.sessionData, null, 4))
   })
 
   it('dataFilter - agencyName startWith cpf (case in-censitive search)', function () {
